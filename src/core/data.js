@@ -1122,6 +1122,213 @@ export async function getOptions({ symbol, max_expirations } = {}) {
   };
 }
 
+const OPTION_CHAIN_COLUMNS = ['expiration', 'strike', 'option-type', 'bid', 'ask', 'iv', 'bid_iv', 'ask_iv', 'delta', 'gamma', 'theta', 'vega', 'rho'];
+
+// Confirmed absent from the scanner (Phase -1C discovery) — every spelling
+// variant tried returned null even on liquid ATM contracts with live bid/ask.
+// Never fabricate these; always report them as unavailable.
+const OPTION_CHAIN_UNAVAILABLE_FIELDS = ['last', 'volume', 'open_interest', 'bid_size', 'ask_size', 'theoretical_price', 'multiplier'];
+
+const WIDE_SPREAD_PCT = 15;
+
+function parseIsoDateToYyyymmdd(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso).trim());
+  if (!m) throw new Error(`Invalid expiration "${iso}". Expected ISO format YYYY-MM-DD.`);
+  return Number(m[1] + m[2] + m[3]);
+}
+
+export async function getOptionChain({
+  symbol, expiration, min_dte, max_dte, option_type,
+  min_strike, max_strike, min_delta, max_delta, max_results,
+} = {}) {
+  const sym = await resolveSymbol(symbol);
+
+  const type = option_type == null || option_type === '' ? 'all' : String(option_type).trim().toLowerCase();
+  if (!['all', 'call', 'put'].includes(type)) {
+    throw new Error(`Invalid option_type "${option_type}". Must be "call", "put", or "all".`);
+  }
+
+  const HARD_MAX_RESULTS = 500;
+  const maxResults = max_results == null ? 200 : Number(max_results);
+  if (!Number.isFinite(maxResults) || maxResults < 1) {
+    throw new Error(`Invalid max_results "${max_results}". Must be a positive integer.`);
+  }
+  if (maxResults > HARD_MAX_RESULTS) {
+    throw new Error(`max_results ${maxResults} exceeds the hard maximum of ${HARD_MAX_RESULTS}.`);
+  }
+
+  let expirationYmd = null;
+  if (expiration != null && expiration !== '') {
+    expirationYmd = parseIsoDateToYyyymmdd(expiration);
+  }
+
+  for (const [name, v] of [['min_dte', min_dte], ['max_dte', max_dte], ['min_strike', min_strike], ['max_strike', max_strike]]) {
+    if (v != null && !Number.isFinite(Number(v))) throw new Error(`Invalid ${name} "${v}". Must be numeric.`);
+  }
+  for (const [name, v] of [['min_delta', min_delta], ['max_delta', max_delta]]) {
+    if (v != null && (!Number.isFinite(Number(v)) || Math.abs(Number(v)) > 1)) {
+      throw new Error(`Invalid ${name} "${v}". Must be a number between -1 and 1.`);
+    }
+  }
+
+  const today = new Date();
+  const todayYmd = Number(`${today.getUTCFullYear()}${String(today.getUTCMonth() + 1).padStart(2, '0')}${String(today.getUTCDate()).padStart(2, '0')}`);
+
+  const data = await evaluateAsync(`
+    (async function() {
+      try {
+        var body = {
+          columns: ${JSON.stringify(OPTION_CHAIN_COLUMNS)},
+          filter: [],
+          index_filters: [{ name: 'underlying_symbol', values: [${safeString(sym.pro_name)}] }],
+          range: [0, 4000],
+          sort: { sortBy: 'expiration', sortOrder: 'asc' }
+        };
+        var r = await fetch('https://scanner.tradingview.com/options/scan', {
+          method: 'POST', credentials: 'include',
+          headers: { 'content-type': 'text/plain' }, body: JSON.stringify(body)
+        });
+        if (!r.ok) return { __error: 'options service returned HTTP ' + r.status };
+        var j = await r.json();
+        var rows = (j && j.data) || [];
+
+        var todayYmd = ${todayYmd};
+        var expirationYmd = ${expirationYmd == null ? 'null' : expirationYmd};
+        var minDte = ${min_dte == null ? 'null' : Number(min_dte)};
+        var maxDte = ${max_dte == null ? 'null' : Number(max_dte)};
+        var wantType = ${JSON.stringify(type)};
+        var minStrike = ${min_strike == null ? 'null' : Number(min_strike)};
+        var maxStrike = ${max_strike == null ? 'null' : Number(max_strike)};
+        var minDelta = ${min_delta == null ? 'null' : Number(min_delta)};
+        var maxDelta = ${max_delta == null ? 'null' : Number(max_delta)};
+        var maxResults = ${maxResults};
+
+        function ymdToDte(ymd) {
+          var s = String(ymd);
+          var y = Number(s.slice(0,4)), mo = Number(s.slice(4,6)) - 1, d = Number(s.slice(6,8));
+          var expiryMs = Date.UTC(y, mo, d);
+          var todayS = String(todayYmd);
+          var todayMs = Date.UTC(Number(todayS.slice(0,4)), Number(todayS.slice(4,6)) - 1, Number(todayS.slice(6,8)));
+          return Math.round((expiryMs - todayMs) / 86400000);
+        }
+
+        var matched = [];
+        for (var i = 0; i < rows.length; i++) {
+          var d = rows[i].d;
+          if (!d) continue;
+          var exp = d[0], strike = d[1], otype = d[2];
+          if (expirationYmd != null && exp !== expirationYmd) continue;
+          var dte = ymdToDte(exp);
+          if (minDte != null && dte < minDte) continue;
+          if (maxDte != null && dte > maxDte) continue;
+          if (wantType !== 'all' && otype !== wantType) continue;
+          if (minStrike != null && strike < minStrike) continue;
+          if (maxStrike != null && strike > maxStrike) continue;
+          var delta = d[8];
+          if (minDelta != null && (delta == null || delta < minDelta)) continue;
+          if (maxDelta != null && (delta == null || delta > maxDelta)) continue;
+          matched.push({ s: rows[i].s, d: d, dte: dte });
+        }
+
+        var matchedCount = matched.length;
+        var returned = matched.slice(0, maxResults);
+
+        return {
+          total_contracts_scanned: rows.length,
+          matched_contracts: matchedCount,
+          returned_contracts: returned.length,
+          rows: returned
+        };
+      } catch (e) { return { __error: String((e && e.message) || e) }; }
+    })()
+  `);
+
+  if (!data) throw new Error('No response from TradingView options service.');
+  if (data.__error) throw new Error(`TradingView options request failed: ${data.__error}`);
+
+  const asOfUtc = new Date().toISOString();
+  const dataQuality = {
+    zero_bid_count: 0,
+    crossed_market_count: 0,
+    missing_iv_count: 0,
+    missing_greeks_count: 0,
+    wide_spread_count: 0,
+  };
+
+  const contracts = data.rows.map(row => {
+    const d = row.d;
+    const [expYmd, strike, optionType, bid, ask, iv, bidIv, askIv, delta, gamma, theta, vega, rho] = d;
+    const expS = String(expYmd);
+    const expirationIso = `${expS.slice(0, 4)}-${expS.slice(4, 6)}-${expS.slice(6, 8)}`;
+
+    const mid = (bid != null && ask != null) ? (bid + ask) / 2 : null;
+    const spread = (bid != null && ask != null) ? ask - bid : null;
+    const spreadPct = (spread != null && mid != null && mid > 0) ? round2((spread / mid) * 100) : null;
+    const ivSpread = (askIv != null && bidIv != null) ? round2((askIv - bidIv) * 100) : null;
+
+    const flags = [];
+    if (bid === 0) { flags.push('ZERO_BID'); dataQuality.zero_bid_count++; }
+    if (ask === 0) flags.push('ZERO_ASK');
+    if (bid != null && ask != null && ask < bid) { flags.push('CROSSED_MARKET'); dataQuality.crossed_market_count++; }
+    if (iv == null) { flags.push('MISSING_IV'); dataQuality.missing_iv_count++; }
+    if (delta == null || gamma == null || theta == null || vega == null || rho == null) {
+      flags.push('MISSING_GREEKS');
+      dataQuality.missing_greeks_count++;
+    }
+    if (spreadPct != null && spreadPct > WIDE_SPREAD_PCT) { flags.push('WIDE_SPREAD'); dataQuality.wide_spread_count++; }
+
+    return {
+      contract: row.s,
+      expiration: expirationIso,
+      days_to_expiry: row.dte,
+      strike,
+      option_type: optionType,
+      bid: bid ?? null,
+      ask: ask ?? null,
+      iv: iv != null ? round2(iv * 100) : null,
+      bid_iv: bidIv != null ? round2(bidIv * 100) : null,
+      ask_iv: askIv != null ? round2(askIv * 100) : null,
+      delta: delta ?? null,
+      gamma: gamma ?? null,
+      theta: theta ?? null,
+      vega: vega ?? null,
+      rho: rho ?? null,
+      mid: mid != null ? round2(mid) : null,
+      spread: spread != null ? round2(spread) : null,
+      spread_pct: spreadPct,
+      iv_spread: ivSpread,
+      quality_flags: flags,
+    };
+  });
+
+  return {
+    success: true,
+    symbol: sym.pro_name,
+    source: 'TradingView Options Scanner',
+    scanner_endpoint: 'https://scanner.tradingview.com/options/scan',
+    as_of_utc: asOfUtc,
+    filters: {
+      expiration: expiration ?? null,
+      min_dte: min_dte ?? null,
+      max_dte: max_dte ?? null,
+      option_type: type,
+      min_strike: min_strike ?? null,
+      max_strike: max_strike ?? null,
+      min_delta: min_delta ?? null,
+      max_delta: max_delta ?? null,
+      max_results: maxResults,
+    },
+    total_contracts_scanned: data.total_contracts_scanned,
+    matched_contracts: data.matched_contracts,
+    returned_contracts: data.returned_contracts,
+    data_quality: dataQuality,
+    contracts,
+    available_fields: ['contract', 'expiration', 'strike', 'option_type', 'bid', 'ask', 'iv', 'bid_iv', 'ask_iv', 'delta', 'gamma', 'theta', 'vega', 'rho'],
+    unavailable_fields: OPTION_CHAIN_UNAVAILABLE_FIELDS,
+    note: 'mid, spread, spread_pct, and iv_spread are DERIVED client-side, not native TradingView fields. quality_flags are informational only — contracts are never dropped based on them.',
+  };
+}
+
 export async function getEtfProfile({ symbol } = {}) {
   const sym = await resolveSymbol(symbol);
   const d = await scannerFields(sym.pro_name, [

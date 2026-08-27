@@ -143,6 +143,22 @@ export function registerDataTools(server) {
     catch (err) { return jsonResult({ success: false, error: err.message }, true); }
   });
 
+  server.tool('options_get_chain', 'Full options chain (bid/ask, IV, bid/ask IV, Greeks) filtered server-side by the TradingView scanner, then narrowed further in the browser context before returning — only matching contracts cross into MCP. Current limitations: no volume, no open interest, no last trade price, no bid/ask size, no theoretical price, no contract multiplier — these are not exposed by this scanner endpoint and are never inferred or fabricated. mid/spread/spread_pct/iv_spread in the output are DERIVED client-side, not native fields.', {
+    symbol: z.string().optional().describe('Exchange-qualified symbol. Omit for the current chart symbol.'),
+    expiration: z.string().optional().describe('Exact expiration date, ISO format YYYY-MM-DD.'),
+    min_dte: z.coerce.number().optional().describe('Minimum days to expiry.'),
+    max_dte: z.coerce.number().optional().describe('Maximum days to expiry.'),
+    option_type: z.enum(['call', 'put', 'all']).optional().describe('Filter by option type (default "all").'),
+    min_strike: z.coerce.number().optional().describe('Minimum strike price.'),
+    max_strike: z.coerce.number().optional().describe('Maximum strike price.'),
+    min_delta: z.coerce.number().optional().describe('Minimum delta (-1 to 1).'),
+    max_delta: z.coerce.number().optional().describe('Maximum delta (-1 to 1).'),
+    max_results: z.coerce.number().optional().describe('Max contracts to return (default 200, hard maximum 500).'),
+  }, async ({ symbol, expiration, min_dte, max_dte, option_type, min_strike, max_strike, min_delta, max_delta, max_results }) => {
+    try { return jsonResult(await core.getOptionChain({ symbol, expiration, min_dte, max_dte, option_type, min_strike, max_strike, min_delta, max_delta, max_results })); }
+    catch (err) { return jsonResult({ success: false, error: err.message }, true); }
+  });
+
   server.tool('data_get_etf_profile', 'ETF/fund profile: AUM, expense ratio, NAV, fund type. Returns an error for non-fund instruments.', {
     symbol: z.string().optional().describe('Exchange-qualified symbol (e.g. "AMEX:SPY"). Omit for the current chart symbol.'),
   }, async ({ symbol }) => {
