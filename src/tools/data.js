@@ -143,7 +143,7 @@ export function registerDataTools(server) {
     catch (err) { return jsonResult({ success: false, error: err.message }, true); }
   });
 
-  server.tool('options_get_chain', 'Full options chain (bid/ask, IV, bid/ask IV, Greeks) filtered server-side by the TradingView scanner, then narrowed further in the browser context before returning — only matching contracts cross into MCP. Current limitations: no volume, no open interest, no last trade price, no bid/ask size, no theoretical price, no contract multiplier — these are not exposed by this scanner endpoint and are never inferred or fabricated. mid/spread/spread_pct/iv_spread in the output are DERIVED client-side, not native fields.', {
+  server.tool('options_get_chain', 'Full options chain (bid/ask, theoretical price, IV, bid/ask IV, Greeks) via the TradingView scan2 scanner, filtered server-side and then narrowed further in the browser context before returning — only matching contracts cross into MCP. Current limitations: no volume, no open interest, no last trade price, no bid/ask size, no contract multiplier — these are not exposed by this scanner endpoint and are never inferred or fabricated (see native_fields/derived_fields/unavailable_fields in the response). mid/spread/spread_pct/iv_spread are DERIVED client-side, not native fields. retrieved_at_utc is request time, not a guaranteed exchange quote timestamp.', {
     symbol: z.string().optional().describe('Exchange-qualified symbol. Omit for the current chart symbol.'),
     expiration: z.string().optional().describe('Exact expiration date, ISO format YYYY-MM-DD.'),
     min_dte: z.coerce.number().optional().describe('Minimum days to expiry.'),

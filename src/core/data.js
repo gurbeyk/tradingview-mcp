@@ -1122,12 +1122,21 @@ export async function getOptions({ symbol, max_expirations } = {}) {
   };
 }
 
-const OPTION_CHAIN_COLUMNS = ['expiration', 'strike', 'option-type', 'bid', 'ask', 'iv', 'bid_iv', 'ask_iv', 'delta', 'gamma', 'theta', 'vega', 'rho'];
+// Phase -1E: upgraded from /options/scan to /options/scan2, which additionally
+// exposes theoPrice (theoretical price), pricescale, root, and currency —
+// none of these were available on the v1 endpoint (Phase -1C discovery).
+const OPTION_CHAIN_COLUMNS = ['expiration', 'strike', 'option-type', 'bid', 'ask', 'iv', 'bid_iv', 'ask_iv', 'delta', 'gamma', 'theta', 'vega', 'rho', 'theoPrice', 'pricescale', 'root', 'currency'];
+
+const OPTION_CHAIN_NATIVE_FIELDS = ['contract', 'root', 'expiration', 'strike', 'option_type', 'currency', 'bid', 'ask', 'theoretical_price', 'iv', 'bid_iv', 'ask_iv', 'delta', 'gamma', 'theta', 'vega', 'rho'];
+const OPTION_CHAIN_DERIVED_FIELDS = ['mid', 'spread', 'spread_pct', 'iv_spread'];
 
 // Confirmed absent from the scanner (Phase -1C discovery) — every spelling
 // variant tried returned null even on liquid ATM contracts with live bid/ask.
-// Never fabricate these; always report them as unavailable.
-const OPTION_CHAIN_UNAVAILABLE_FIELDS = ['last', 'volume', 'open_interest', 'bid_size', 'ask_size', 'theoretical_price', 'multiplier'];
+// Volume and last price DO exist, but only as best-effort WebSocket
+// enrichment (Phase -1D/-1D.1/-1D.2) — never guaranteed, never snapshot-able
+// on demand, and therefore never part of this synchronous scanner response.
+// Never fabricate any of these.
+const OPTION_CHAIN_UNAVAILABLE_FIELDS = ['last', 'volume', 'open_interest', 'bid_size', 'ask_size', 'multiplier'];
 
 const WIDE_SPREAD_PCT = 15;
 
@@ -1137,18 +1146,100 @@ function parseIsoDateToYyyymmdd(iso) {
   return Number(m[1] + m[2] + m[3]);
 }
 
-export async function getOptionChain({
-  symbol, expiration, min_dte, max_dte, option_type,
-  min_strike, max_strike, min_delta, max_delta, max_results,
-} = {}) {
-  const sym = await resolveSymbol(symbol);
+/** Pure — no network. YYYYMMDD int -> "YYYY-MM-DD". */
+export function ymdToIsoDate(ymd) {
+  const s = String(ymd);
+  return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
+}
+
+/**
+ * Pure — no network. Builds one normalized options_get_chain contract record
+ * (native + derived fields + quality flags) from one scan2 row.
+ * `d` is the field array in OPTION_CHAIN_COLUMNS order; `s` is the contract
+ * ticker; `dte` is the pre-computed days-to-expiry.
+ */
+export function buildOptionChainContract({ s, d, dte }) {
+  const [expYmd, strike, optionType, bid, ask, iv, bidIv, askIv, delta, gamma, theta, vega, rho, theoPrice, pricescale, root, currency] = d;
+
+  const mid = (bid != null && ask != null) ? (bid + ask) / 2 : null;
+  const spread = (bid != null && ask != null) ? ask - bid : null;
+  const spreadPct = (spread != null && mid != null && mid > 0) ? round2((spread / mid) * 100) : null;
+  const ivSpread = (askIv != null && bidIv != null) ? round2((askIv - bidIv) * 100) : null;
+
+  const flags = [];
+  if (bid === 0) flags.push('ZERO_BID');
+  if (ask === 0) flags.push('ZERO_ASK');
+  if (bid != null && ask != null && ask < bid) flags.push('CROSSED_MARKET');
+  if (iv == null) flags.push('MISSING_IV');
+  if (delta == null || gamma == null || theta == null || vega == null || rho == null) flags.push('MISSING_GREEKS');
+  // Missing theoPrice is informational only — never treat a contract as
+  // untradeable just because the scanner didn't return a theoretical price.
+  if (theoPrice == null) flags.push('MISSING_THEORETICAL_PRICE');
+  if (spreadPct != null && spreadPct > WIDE_SPREAD_PCT) flags.push('WIDE_SPREAD');
+
+  return {
+    contract: s,
+    root: root ?? null,
+    expiration: ymdToIsoDate(expYmd),
+    days_to_expiry: dte,
+    strike,
+    option_type: optionType,
+    currency: currency ?? null,
+    bid: bid ?? null,
+    ask: ask ?? null,
+    theoretical_price: theoPrice ?? null,
+    iv: iv != null ? round2(iv * 100) : null,
+    bid_iv: bidIv != null ? round2(bidIv * 100) : null,
+    ask_iv: askIv != null ? round2(askIv * 100) : null,
+    delta: delta ?? null,
+    gamma: gamma ?? null,
+    theta: theta ?? null,
+    vega: vega ?? null,
+    rho: rho ?? null,
+    mid: mid != null ? round2(mid) : null,
+    spread: spread != null ? round2(spread) : null,
+    spread_pct: spreadPct,
+    iv_spread: ivSpread,
+    quality_flags: flags,
+  };
+}
+
+/** Pure — no network. Tallies dataQuality counts from built contract records. */
+export function tallyOptionChainQuality(contracts) {
+  const tally = {
+    zero_bid_count: 0,
+    crossed_market_count: 0,
+    missing_iv_count: 0,
+    missing_greeks_count: 0,
+    missing_theoretical_price_count: 0,
+    wide_spread_count: 0,
+  };
+  const flagToKey = {
+    ZERO_BID: 'zero_bid_count',
+    CROSSED_MARKET: 'crossed_market_count',
+    MISSING_IV: 'missing_iv_count',
+    MISSING_GREEKS: 'missing_greeks_count',
+    MISSING_THEORETICAL_PRICE: 'missing_theoretical_price_count',
+    WIDE_SPREAD: 'wide_spread_count',
+  };
+  for (const c of contracts) {
+    for (const flag of c.quality_flags) {
+      const key = flagToKey[flag];
+      if (key) tally[key]++;
+    }
+  }
+  return tally;
+}
+
+/** Pure — no network. Input validation shared by getOptionChain. Throws on invalid input. */
+export function validateOptionChainInputs({ option_type, max_results, expiration, min_dte, max_dte, min_strike, max_strike, min_delta, max_delta }) {
+  const HARD_MAX_RESULTS = 500;
 
   const type = option_type == null || option_type === '' ? 'all' : String(option_type).trim().toLowerCase();
   if (!['all', 'call', 'put'].includes(type)) {
     throw new Error(`Invalid option_type "${option_type}". Must be "call", "put", or "all".`);
   }
 
-  const HARD_MAX_RESULTS = 500;
   const maxResults = max_results == null ? 200 : Number(max_results);
   if (!Number.isFinite(maxResults) || maxResults < 1) {
     throw new Error(`Invalid max_results "${max_results}". Must be a positive integer.`);
@@ -1171,6 +1262,19 @@ export async function getOptionChain({
     }
   }
 
+  return { type, maxResults, expirationYmd };
+}
+
+export async function getOptionChain({
+  symbol, expiration, min_dte, max_dte, option_type,
+  min_strike, max_strike, min_delta, max_delta, max_results,
+} = {}) {
+  const { type, maxResults, expirationYmd } = validateOptionChainInputs({
+    option_type, max_results, expiration, min_dte, max_dte, min_strike, max_strike, min_delta, max_delta,
+  });
+
+  const sym = await resolveSymbol(symbol);
+
   const today = new Date();
   const todayYmd = Number(`${today.getUTCFullYear()}${String(today.getUTCMonth() + 1).padStart(2, '0')}${String(today.getUTCDate()).padStart(2, '0')}`);
 
@@ -1179,18 +1283,18 @@ export async function getOptionChain({
       try {
         var body = {
           columns: ${JSON.stringify(OPTION_CHAIN_COLUMNS)},
-          filter: [],
+          ignore_unknown_fields: false,
           index_filters: [{ name: 'underlying_symbol', values: [${safeString(sym.pro_name)}] }],
-          range: [0, 4000],
-          sort: { sortBy: 'expiration', sortOrder: 'asc' }
+          filter2: { operator: 'and', operands: [{ expression: { left: 'type', operation: 'equal', right: 'option' } }] },
+          range: [0, 4000]
         };
-        var r = await fetch('https://scanner.tradingview.com/options/scan', {
+        var r = await fetch('https://scanner.tradingview.com/options/scan2?label-product=options-overlay', {
           method: 'POST', credentials: 'include',
           headers: { 'content-type': 'text/plain' }, body: JSON.stringify(body)
         });
         if (!r.ok) return { __error: 'options service returned HTTP ' + r.status };
         var j = await r.json();
-        var rows = (j && j.data) || [];
+        var rows = (j && j.symbols) || [];
 
         var todayYmd = ${todayYmd};
         var expirationYmd = ${expirationYmd == null ? 'null' : expirationYmd};
@@ -1214,7 +1318,7 @@ export async function getOptionChain({
 
         var matched = [];
         for (var i = 0; i < rows.length; i++) {
-          var d = rows[i].d;
+          var d = rows[i].f;
           if (!d) continue;
           var exp = d[0], strike = d[1], otype = d[2];
           if (expirationYmd != null && exp !== expirationYmd) continue;
@@ -1246,67 +1350,19 @@ export async function getOptionChain({
   if (!data) throw new Error('No response from TradingView options service.');
   if (data.__error) throw new Error(`TradingView options request failed: ${data.__error}`);
 
-  const asOfUtc = new Date().toISOString();
-  const dataQuality = {
-    zero_bid_count: 0,
-    crossed_market_count: 0,
-    missing_iv_count: 0,
-    missing_greeks_count: 0,
-    wide_spread_count: 0,
-  };
-
-  const contracts = data.rows.map(row => {
-    const d = row.d;
-    const [expYmd, strike, optionType, bid, ask, iv, bidIv, askIv, delta, gamma, theta, vega, rho] = d;
-    const expS = String(expYmd);
-    const expirationIso = `${expS.slice(0, 4)}-${expS.slice(4, 6)}-${expS.slice(6, 8)}`;
-
-    const mid = (bid != null && ask != null) ? (bid + ask) / 2 : null;
-    const spread = (bid != null && ask != null) ? ask - bid : null;
-    const spreadPct = (spread != null && mid != null && mid > 0) ? round2((spread / mid) * 100) : null;
-    const ivSpread = (askIv != null && bidIv != null) ? round2((askIv - bidIv) * 100) : null;
-
-    const flags = [];
-    if (bid === 0) { flags.push('ZERO_BID'); dataQuality.zero_bid_count++; }
-    if (ask === 0) flags.push('ZERO_ASK');
-    if (bid != null && ask != null && ask < bid) { flags.push('CROSSED_MARKET'); dataQuality.crossed_market_count++; }
-    if (iv == null) { flags.push('MISSING_IV'); dataQuality.missing_iv_count++; }
-    if (delta == null || gamma == null || theta == null || vega == null || rho == null) {
-      flags.push('MISSING_GREEKS');
-      dataQuality.missing_greeks_count++;
-    }
-    if (spreadPct != null && spreadPct > WIDE_SPREAD_PCT) { flags.push('WIDE_SPREAD'); dataQuality.wide_spread_count++; }
-
-    return {
-      contract: row.s,
-      expiration: expirationIso,
-      days_to_expiry: row.dte,
-      strike,
-      option_type: optionType,
-      bid: bid ?? null,
-      ask: ask ?? null,
-      iv: iv != null ? round2(iv * 100) : null,
-      bid_iv: bidIv != null ? round2(bidIv * 100) : null,
-      ask_iv: askIv != null ? round2(askIv * 100) : null,
-      delta: delta ?? null,
-      gamma: gamma ?? null,
-      theta: theta ?? null,
-      vega: vega ?? null,
-      rho: rho ?? null,
-      mid: mid != null ? round2(mid) : null,
-      spread: spread != null ? round2(spread) : null,
-      spread_pct: spreadPct,
-      iv_spread: ivSpread,
-      quality_flags: flags,
-    };
-  });
+  const retrievedAtUtc = new Date().toISOString();
+  const contracts = data.rows.map(row => buildOptionChainContract(row));
+  const dataQuality = tallyOptionChainQuality(contracts);
 
   return {
     success: true,
     symbol: sym.pro_name,
     source: 'TradingView Options Scanner',
-    scanner_endpoint: 'https://scanner.tradingview.com/options/scan',
-    as_of_utc: asOfUtc,
+    source_endpoint: '/options/scan2',
+    // Request/retrieval time on our side — NOT a guaranteed exchange quote
+    // timestamp. The scanner response carries no per-row quote timestamp;
+    // this only marks when this tool asked for the data.
+    retrieved_at_utc: retrievedAtUtc,
     filters: {
       expiration: expiration ?? null,
       min_dte: min_dte ?? null,
@@ -1323,11 +1379,41 @@ export async function getOptionChain({
     returned_contracts: data.returned_contracts,
     data_quality: dataQuality,
     contracts,
-    available_fields: ['contract', 'expiration', 'strike', 'option_type', 'bid', 'ask', 'iv', 'bid_iv', 'ask_iv', 'delta', 'gamma', 'theta', 'vega', 'rho'],
+    native_fields: OPTION_CHAIN_NATIVE_FIELDS,
+    derived_fields: OPTION_CHAIN_DERIVED_FIELDS,
     unavailable_fields: OPTION_CHAIN_UNAVAILABLE_FIELDS,
-    note: 'mid, spread, spread_pct, and iv_spread are DERIVED client-side, not native TradingView fields. quality_flags are informational only — contracts are never dropped based on them.',
+    note: 'mid, spread, spread_pct, and iv_spread are DERIVED client-side, not native TradingView fields. quality_flags are informational only — contracts are never dropped based on them (including MISSING_THEORETICAL_PRICE). volume and last price are not part of this response: TradingView\'s options scanner never returns them synchronously — see options_get_live_stats design note for the separate, best-effort WebSocket enrichment path.',
   };
 }
+
+// ---------------------------------------------------------------------------
+// DESIGN NOTE (not implemented) — future optional enrichment: options_get_live_stats
+//
+// Phase -1D/-1D.1/-1D.2 confirmed that TradingView's options board pushes
+// per-contract `last price` and `volume` over an already-open WebSocket
+// (qs_multiplexer_options_* "qsd" messages), but ONLY as part of trade-driven
+// updates — there is no guaranteed initial snapshot. A contract that hasn't
+// traded since the browser subscribed to it may show bid/ask indefinitely
+// with no last/volume value at all.
+//
+// A possible future tool:
+//
+//   options_get_live_stats({ symbol?, contracts?: string[] })
+//     -> { contract, last, volume, change, change_pct, capture_timestamp }[]
+//
+// Rules any such tool MUST follow:
+//   - `last` and `volume` may be null. Null means NOT OBSERVED IN CURRENT
+//     LIVE STREAM — never interpret it as zero volume, no trades, or an
+//     invalid contract.
+//   - `capture_timestamp` is receipt time on our side, not an exchange
+//     last-trade time (TradingView's own `lp_time` field was never observed
+//     populated in any sampled message during discovery).
+//   - This enrichment MUST NOT be a hard dependency of anything built on top
+//     of options_get_chain (e.g. a future Strategy Engine). bid/ask/IV/Greeks
+//     from options_get_chain must remain sufficient on their own.
+//
+// Not implemented in this phase.
+// ---------------------------------------------------------------------------
 
 export async function getEtfProfile({ symbol } = {}) {
   const sym = await resolveSymbol(symbol);
