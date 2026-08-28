@@ -1140,6 +1140,12 @@ const OPTION_CHAIN_UNAVAILABLE_FIELDS = ['last', 'volume', 'open_interest', 'bid
 
 const WIDE_SPREAD_PCT = 15;
 
+// The scan2 request below caps range at [0, 4000]. If the underlying has more
+// contracts than that (observed for AMEX:SPY in Phase -1E), the response is
+// silently truncated. Surface this explicitly rather than letting callers
+// (e.g. the Phase 0A strategy engine) assume they saw the whole chain.
+const SCANNER_ROW_CAP = 4000;
+
 function parseIsoDateToYyyymmdd(iso) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso).trim());
   if (!m) throw new Error(`Invalid expiration "${iso}". Expected ISO format YYYY-MM-DD.`);
@@ -1339,6 +1345,7 @@ export async function getOptionChain({
 
         return {
           total_contracts_scanned: rows.length,
+          total_contracts_available: (j && typeof j.totalCount === 'number') ? j.totalCount : null,
           matched_contracts: matchedCount,
           returned_contracts: returned.length,
           rows: returned
@@ -1353,6 +1360,14 @@ export async function getOptionChain({
   const retrievedAtUtc = new Date().toISOString();
   const contracts = data.rows.map(row => buildOptionChainContract(row));
   const dataQuality = tallyOptionChainQuality(contracts);
+
+  // Truncation signal: the scanner cap was hit AND (if we know the true
+  // count) more contracts existed than we fetched. Treat an unknown true
+  // count at the cap as possibly-truncated too, rather than assuming complete.
+  const hitCap = data.total_contracts_scanned >= SCANNER_ROW_CAP;
+  const knownLarger = data.total_contracts_available != null && data.total_contracts_available > data.total_contracts_scanned;
+  const chainCompleteness = (hitCap && (knownLarger || data.total_contracts_available == null)) ? 'POSSIBLY_TRUNCATED' : 'COMPLETE';
+  const warnings = chainCompleteness === 'POSSIBLY_TRUNCATED' ? ['CHAIN_POSSIBLY_TRUNCATED'] : [];
 
   return {
     success: true,
@@ -1375,8 +1390,11 @@ export async function getOptionChain({
       max_results: maxResults,
     },
     total_contracts_scanned: data.total_contracts_scanned,
+    total_contracts_available: data.total_contracts_available,
     matched_contracts: data.matched_contracts,
     returned_contracts: data.returned_contracts,
+    chain_completeness: chainCompleteness,
+    warnings,
     data_quality: dataQuality,
     contracts,
     native_fields: OPTION_CHAIN_NATIVE_FIELDS,
