@@ -64,3 +64,30 @@ export const REJECTION_REASONS = Object.freeze({
 export const CONTRACT_MULTIPLIER_SOURCE = Object.freeze({
   ASSUMED_STANDARD_US_EQUITY_OPTION: 'ASSUMED_STANDARD_US_EQUITY_OPTION',
 });
+
+// Phase 0B — scenario/mark-to-market pricing models. LOCAL_GREEK_APPROXIMATION
+// is the only one implemented; AMERICAN_OPTION_MODEL is a reserved name for a
+// future proper American-option repricer (not implemented — see strategyScenarios.js
+// header for the interface future pricers must satisfy).
+export const PRICING_MODELS = Object.freeze({
+  LOCAL_GREEK_APPROXIMATION: 'LOCAL_GREEK_APPROXIMATION',
+  EXPIRATION_INTRINSIC: 'EXPIRATION_INTRINSIC',
+  AMERICAN_OPTION_MODEL: 'AMERICAN_OPTION_MODEL', // reserved, not implemented
+});
+
+export const ANCHOR_PRICE_SOURCES = Object.freeze({
+  TRADINGVIEW_THEORETICAL_PRICE: 'TRADINGVIEW_THEORETICAL_PRICE',
+});
+
+// Phase 0B — approximation safety flags (Step 4). These are warnings, never
+// silent confidence: the local-Greek approximation degrades for large moves,
+// large time steps, and near expiration.
+export const SCENARIO_WARNINGS = Object.freeze({
+  LARGE_SPOT_MOVE: 'LARGE_SPOT_MOVE',
+  LARGE_IV_CHANGE: 'LARGE_IV_CHANGE',
+  LARGE_TIME_STEP: 'LARGE_TIME_STEP',
+  NEAR_EXPIRATION: 'NEAR_EXPIRATION',
+  INTRINSIC_FLOOR_APPLIED: 'INTRINSIC_FLOOR_APPLIED',
+  MISSING_THEORETICAL_PRICE: 'MISSING_THEORETICAL_PRICE',
+  MISSING_GREEKS: 'MISSING_GREEKS',
+});
