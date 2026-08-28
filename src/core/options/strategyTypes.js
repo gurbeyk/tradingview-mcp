@@ -91,3 +91,40 @@ export const SCENARIO_WARNINGS = Object.freeze({
   MISSING_THEORETICAL_PRICE: 'MISSING_THEORETICAL_PRICE',
   MISSING_GREEKS: 'MISSING_GREEKS',
 });
+
+// Phase 0C — deterministic ranking. RANKING_MODEL_V1 is a versioned,
+// absolute (non-percentile) heuristic comparative score. It is explicitly
+// NOT a probability, expected return, or win rate — see score_disclaimer
+// on the ranking output.
+export const RANKING_MODEL_VERSION = 'RANKING_MODEL_V1';
+
+export const CONFIDENCE_LEVELS = Object.freeze({
+  HIGH: 'HIGH',
+  MEDIUM: 'MEDIUM',
+  LOW: 'LOW',
+});
+
+export const RANKING_CLASSES = Object.freeze({
+  TRADE: 'TRADE',
+  UNDERLYING_BASELINE: 'UNDERLYING_BASELINE',
+  BASELINE: 'BASELINE',
+});
+
+export const DECISION_STATES = Object.freeze({
+  TRADE_CANDIDATES_AVAILABLE: 'TRADE_CANDIDATES_AVAILABLE',
+  NO_TRADE_BASELINE_ONLY: 'NO_TRADE_BASELINE_ONLY',
+});
+
+export const REWARD_RISK_TYPES = Object.freeze({
+  DEFINED: 'DEFINED',
+  UNBOUNDED_UPSIDE: 'UNBOUNDED_UPSIDE',
+  UNDERLYING_BASELINE: 'UNDERLYING_BASELINE',
+});
+
+// Extend the Phase 0A rejection vocabulary with Phase 0C ranking-stage reasons.
+export const RANKING_REJECTION_REASONS = Object.freeze({
+  SCENARIO_DATA_UNAVAILABLE: 'SCENARIO_DATA_UNAVAILABLE',
+  CAPPED_REWARD_RISK_BELOW_MINIMUM: 'CAPPED_REWARD_RISK_BELOW_MINIMUM',
+  SCORE_BELOW_THRESHOLD: 'SCORE_BELOW_THRESHOLD',
+  CONFIDENCE_BELOW_THRESHOLD: 'CONFIDENCE_BELOW_THRESHOLD',
+});
