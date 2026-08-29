@@ -248,14 +248,14 @@ const AI_CONTRACT_RULES = Object.freeze([
   'If no candidate is eligible, preserve that result — do not promote a near-miss into a recommendation.',
   'Explicitly mention LOW confidence when discussing a candidate.',
   'Mention important scenario warnings (e.g. LARGE_TIME_STEP, NEAR_EXPIRATION) when present.',
-  'Do not infer volume or open interest — this data source does not provide them.',
+  'Do not infer volume or open interest. Open interest is currently unavailable. Volume is not used by this analysis (not a filtering/scoring/ranking input) even where it may be technically obtainable elsewhere as optional live enrichment.',
 ]);
 
 const KNOWN_LIMITATIONS = Object.freeze([
   'Score is a heuristic comparative metric (RANKING_MODEL_V1), not a probability or expected return.',
   'Scenario repricing (LOCAL_GREEK_APPROXIMATION) is a local approximation, not a full option pricing model — see Phase 0B limitations.',
   'Ranking depends entirely on the user-supplied scenario prices; different assumptions produce different rankings.',
-  'No volume or open interest is available from this data source and none is used in filtering, scoring, or ranking.',
+  'Open interest is currently unavailable. Volume (technically obtainable via TradingView WebSocket subscription, but UI/subscription-dependent and event-driven, not a guaranteed initial snapshot) is not a dependency of this tool — neither volume nor open interest is used in filtering, scoring, or ranking.',
   'No historical calibration of scoring weights or thresholds.',
   'No earnings/event-driven volatility model — IV shocks default to 0 unless explicitly supplied.',
   'No portfolio-level risk (correlation, margin, concentration) is modeled.',

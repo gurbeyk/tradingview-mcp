@@ -189,6 +189,12 @@ describe('J) determinism', () => {
     const r2 = await analyzeDirectional({ ...BULLISH_BASE, base_target_price: 120 }, deps);
     assert.notEqual(r1.analysis_snapshot_id, r2.analysis_snapshot_id);
   });
+
+  it('analysis_snapshot_id is a string identifier, not a JS number', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    assert.equal(typeof result.analysis_snapshot_id, 'string');
+    assert.equal(JSON.parse(JSON.stringify(result)).analysis_snapshot_id, result.analysis_snapshot_id);
+  });
 });
 
 describe('output shape / AI safety contract', () => {
