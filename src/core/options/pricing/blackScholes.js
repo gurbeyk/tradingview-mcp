@@ -34,7 +34,8 @@ function validateInputs({ spot, strike, time_to_expiry_years, volatility, risk_f
   assertNonNegativeFinite('time_to_expiry_years', time_to_expiry_years);
   assertNonNegativeFinite('volatility', volatility);
   assertFinite('risk_free_rate', risk_free_rate);
-  assertNonNegativeFinite('dividend_yield', dividend_yield ?? 0);
+  // Signed: see crrAmerican.js's validateInputs for why dividend_yield may be negative.
+  assertFinite('dividend_yield', dividend_yield ?? 0);
 }
 
 /**

@@ -29,7 +29,11 @@ function validateInputs({ option_type, spot, strike, time_to_expiry_years, volat
   assertNonNegativeFinite('time_to_expiry_years', time_to_expiry_years);
   assertPositiveFinite('volatility', volatility);
   assertFinite('risk_free_rate', risk_free_rate);
-  assertNonNegativeFinite('dividend_yield', dividend_yield ?? 0);
+  // Signed: a caller may pass a negative effective_carry_yield (Phase 2B
+  // market-input calibration allows negative implied carry; a plain
+  // dividend yield is never negative in practice, but this pricer doesn't
+  // know which concept the caller is using).
+  assertFinite('dividend_yield', dividend_yield ?? 0);
   if (!Number.isInteger(steps) || steps <= 0) {
     throw new Error(`steps must be a positive integer, got: ${steps}`);
   }
