@@ -10,8 +10,20 @@
 // — see docs/phase-2b1-joint-carry-regression.md). Those modules remain
 // research/diagnostic only.
 
+import { createHash } from 'node:crypto';
 import { normalizeTreasuryDiscountRate } from './rateNormalization.js';
 import { assertFinite, assertPositiveFinite } from './marketInputTypes.js';
+
+/**
+ * Phase 2C.1, Step 21 — deterministic id from the normalized inputs that
+ * actually went into a shadow comparison. Does NOT imply the underlying
+ * timestamps (TradingView spot/chain, Treasury, IBKR) were identical —
+ * those are returned separately by the caller.
+ */
+export function buildShadowSnapshotId(normalizedInputs) {
+  const canonical = JSON.stringify(normalizedInputs, Object.keys(normalizedInputs).sort());
+  return createHash('sha256').update(canonical).digest('hex').slice(0, 16);
+}
 
 export const DIVIDEND_MODES = Object.freeze({
   DISCRETE_DIVIDENDS: 'DISCRETE_DIVIDENDS',
