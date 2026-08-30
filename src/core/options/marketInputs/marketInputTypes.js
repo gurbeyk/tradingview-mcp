@@ -31,6 +31,25 @@ export const CALIBRATION_WARNINGS = Object.freeze({
   EXTREME_EFFECTIVE_CARRY: 'EXTREME_EFFECTIVE_CARRY',
   CARRY_ESTIMATORS_DISAGREE: 'CARRY_ESTIMATORS_DISAGREE',
   INSUFFICIENT_PAIRS: 'INSUFFICIENT_PAIRS',
+  // Phase 2B.1 additions:
+  ESTIMATOR_BOUND_HIT: 'ESTIMATOR_BOUND_HIT',
+  JOINT_ESTIMATOR_NOT_CONVERGED: 'JOINT_ESTIMATOR_NOT_CONVERGED',
+  TERM_STRUCTURE_DISCONTINUITY: 'TERM_STRUCTURE_DISCONTINUITY',
+  DISCRETE_DIVIDEND_WINDOW: 'DISCRETE_DIVIDEND_WINDOW',
+});
+
+// Phase 2B.1, Step 2 — calibration-quality liquidity tiers, distinct from
+// Phase 0A's execution gates. STRICT is preferred; DIAGNOSTIC must never
+// be treated as a production-ready result (see impliedCarryConfidence.js).
+export const CALIBRATION_LIQUIDITY_TIERS = Object.freeze({
+  STRICT: 'STRICT',       // max leg spread 5%
+  STANDARD: 'STANDARD',   // max leg spread 10%
+  DIAGNOSTIC: 'DIAGNOSTIC', // max leg spread 20%, diagnostic only
+});
+
+export const JOINT_CARRY_ESTIMATORS = Object.freeze({
+  RAW_PARITY_JOINT_ESTIMATE: 'RAW_PARITY_JOINT_ESTIMATE',
+  AMERICAN_CORRECTED_JOINT_CARRY: 'AMERICAN_CORRECTED_JOINT_CARRY',
 });
 
 // Step 7 — mid prices used for calibration are explicitly NOT an execution
