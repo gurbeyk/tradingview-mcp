@@ -35,6 +35,7 @@ export function registerOptionsAnalysisTools(server) {
       min_capped_reward_risk: z.coerce.number().optional().describe('Optional hard gate: reject BULL_CALL_SPREAD/BEAR_PUT_SPREAD candidates below this max_profit/max_loss ratio. Disabled by default.'),
 
       max_ranked_results: z.coerce.number().optional().describe('Max candidates returned in top_candidates (default 10, hard maximum 25).'),
+      include_crr_hybrid_diagnostics: z.coerce.boolean().optional().describe('Diagnostic-only Phase 2D flag. When true and a CRR-shadow market-input provider is configured, includes crr_hybrid_policy evidence. Never changes ranking, eligibility, scoring, or recommendations.'),
     },
     async (req) => {
       try { return jsonResult(await analyzeDirectional(req)); }

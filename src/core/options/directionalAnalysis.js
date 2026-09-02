@@ -17,6 +17,8 @@ import * as _data from '../data.js';
 import { generateStrategyCandidates as _generateStrategyCandidates } from './strategyCandidates.js';
 import { generateCandidateScenarioResults as _generateCandidateScenarioResults } from './strategyScenarios.js';
 import { rankStrategyCandidates as _rankStrategyCandidates } from './strategyRanking.js';
+import { generateCandidateScenarioResultsCrrShadow as _generateCandidateScenarioResultsCrrShadow } from './marketInputs/crrShadowScenario.js';
+import { evaluateHybridCrrPolicy as _evaluateHybridCrrPolicy } from './marketInputs/hybridCrrPolicy.js';
 
 const round2 = (v) => (v == null || !Number.isFinite(v) ? null : Math.round(v * 100) / 100);
 
@@ -220,7 +222,7 @@ function buildFieldProvenance(scenarioSources) {
     ENGINE_CALCULATED: [
       'entry_debit', 'capital_required', 'max_loss', 'max_profit', 'breakeven', 'reward_risk_ratio',
       'scenario_pnl', 'scenario_return_on_risk_pct', 'estimated_value', 'score', 'grade', 'confidence',
-      'component_scores', 'analysis_snapshot_id',
+      'component_scores', 'analysis_snapshot_id', 'diagnostics.crr_hybrid_policy',
     ],
     USER_INPUT: [
       'symbol', 'direction', 'horizon_days', 'max_loss (constraint)', 'base_target_price',
@@ -248,6 +250,7 @@ const AI_CONTRACT_RULES = Object.freeze([
   'If no candidate is eligible, preserve that result — do not promote a near-miss into a recommendation.',
   'Explicitly mention LOW confidence when discussing a candidate.',
   'Mention important scenario warnings (e.g. LARGE_TIME_STEP, NEAR_EXPIRATION) when present.',
+  'Do not treat crr_hybrid_policy diagnostics as a recommendation, score override, or production pricing switch.',
   'Do not infer volume or open interest. Open interest is currently unavailable. Volume is not used by this analysis (not a filtering/scoring/ranking input) even where it may be technically obtainable elsewhere as optional live enrichment.',
 ]);
 
@@ -263,6 +266,105 @@ const KNOWN_LIMITATIONS = Object.freeze([
   'The scan2 request may be capped by TradingView at 4000 rows for very large chains; chain_completeness/warnings surface this, but the DTE window does not currently reduce the underlying request size.',
   'No AI/LLM reasoning is performed by this tool — it returns structured, deterministic data only.',
 ]);
+
+// ---------------------------------------------------------------------------
+// Phase 2D.2 — guarded CRR hybrid diagnostics
+// ---------------------------------------------------------------------------
+
+function candidateIdsFromTopAndNearMisses(rankingResult, maxRankedResults) {
+  const topIds = rankingResult.ranked_candidates.slice(0, maxRankedResults).map(c => c.candidate_id);
+  const nearMissIds = rankingResult.decision_state === 'NO_TRADE_BASELINE_ONLY'
+    ? rankingResult.ranked_candidates.filter(c => !c.consideration_eligible).slice(0, NEAR_MISS_LIMIT).map(c => c.candidate_id)
+    : [];
+  return [...new Set([...topIds, ...nearMissIds])];
+}
+
+function summarizeMarketInputs(marketInputByExpiration) {
+  if (!marketInputByExpiration) return [];
+  return [...marketInputByExpiration.values()].map(r => ({
+    expiration: r.expiration,
+    days_to_expiry: r.days_to_expiry,
+    mode: r.mode,
+    overall_confidence: r.overall_confidence,
+    discount_rate_source: r.discount_rate_source,
+    dividend_mode: r.dividend_input?.mode ?? null,
+    borrow_source: r.borrow_input?.source ?? null,
+    warnings: r.warnings ?? [],
+  }));
+}
+
+async function buildCrrHybridDiagnostics({
+  req,
+  deps,
+  currentSpot,
+  keyStats,
+  chainResp,
+  contractsByTicker,
+  candidatesResult,
+  enrichedCandidates,
+  rankingResult,
+  rankingContext,
+  scenarios,
+  contractMultiplier,
+  maxRankedResults,
+}) {
+  if (!req.include_crr_hybrid_diagnostics) {
+    return {
+      status: 'NOT_REQUESTED',
+      mode: 'DIAGNOSTIC_ONLY_NO_RANKING_CHANGE',
+    };
+  }
+
+  const buildCrrShadowMarketInputs = deps.buildCrrShadowMarketInputs;
+  if (typeof buildCrrShadowMarketInputs !== 'function') {
+    return {
+      status: 'UNAVAILABLE',
+      mode: 'DIAGNOSTIC_ONLY_NO_RANKING_CHANGE',
+      reason: 'CRR_SHADOW_MARKET_INPUT_PROVIDER_NOT_CONFIGURED',
+    };
+  }
+
+  const expirations = [...new Map(candidatesResult.candidates
+    .filter(c => c.expiration)
+    .map(c => [c.expiration, c.days_to_expiry])).entries()]
+    .map(([expiration, dte]) => ({ expiration, dte }));
+  const marketInputByExpiration = await buildCrrShadowMarketInputs({
+    symbol: req.symbol,
+    root: req.symbol.split(':').at(-1),
+    spot: currentSpot,
+    keyStats,
+    chainResp,
+    expirations,
+  });
+
+  const generateCandidateScenarioResultsCrrShadow = deps.generateCandidateScenarioResultsCrrShadow ?? _generateCandidateScenarioResultsCrrShadow;
+  const evaluateHybridCrrPolicy = deps.evaluateHybridCrrPolicy ?? _evaluateHybridCrrPolicy;
+  const shadowEnriched = candidatesResult.candidates.map(c => generateCandidateScenarioResultsCrrShadow(c, scenarios, contractsByTicker, {
+    contractMultiplier,
+    currentUnderlyingPrice: currentSpot,
+    marketInputByExpiration,
+  }));
+  const policy = evaluateHybridCrrPolicy(enrichedCandidates, shadowEnriched, { rankingContext });
+  const allowedIds = new Set(candidateIdsFromTopAndNearMisses(rankingResult, maxRankedResults));
+
+  return {
+    status: 'AVAILABLE',
+    mode: 'DIAGNOSTIC_ONLY_NO_RANKING_CHANGE',
+    market_inputs: summarizeMarketInputs(marketInputByExpiration),
+    summary: policy.summary,
+    candidates: policy.candidates
+      .filter(c => allowedIds.has(c.candidate_id))
+      .map(c => ({
+        candidate_id: c.candidate_id,
+        strategy_type: c.strategy_type,
+        action: c.action,
+        reasons: c.reasons,
+        local_warnings: c.local_warnings,
+        max_model_disagreement_level: c.max_model_disagreement_level,
+        crr_shadow_available: c.crr_shadow_available,
+      })),
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Main orchestrator
@@ -374,6 +476,22 @@ export async function analyzeDirectional(req, deps = {}) {
     min_capped_reward_risk: req.min_capped_reward_risk,
   });
 
+  const crrHybridDiagnostics = await buildCrrHybridDiagnostics({
+    req,
+    deps,
+    currentSpot,
+    keyStats,
+    chainResp,
+    contractsByTicker,
+    candidatesResult,
+    enrichedCandidates,
+    rankingResult,
+    rankingContext,
+    scenarios,
+    contractMultiplier,
+    maxRankedResults,
+  });
+
   // Step 12/14 — top N candidates, fully detailed.
   const topRanked = rankingResult.ranked_candidates.slice(0, maxRankedResults);
   const topCandidates = topRanked.map(entry =>
@@ -432,6 +550,7 @@ export async function analyzeDirectional(req, deps = {}) {
       upside_iv_change_points: req.upside_iv_change_points ?? null,
       min_dte: req.min_dte ?? null,
       max_dte: req.max_dte ?? null,
+      include_crr_hybrid_diagnostics: req.include_crr_hybrid_diagnostics ?? false,
       execution_model: executionModel,
       commission_per_contract: commissionPerContract,
       contract_multiplier: contractMultiplier,
@@ -474,6 +593,10 @@ export async function analyzeDirectional(req, deps = {}) {
       HIGH_CONFIDENCE_CANDIDATES: scenarioQualitySummary.HIGH,
       MEDIUM_CONFIDENCE_CANDIDATES: scenarioQualitySummary.MEDIUM,
       LOW_CONFIDENCE_CANDIDATES: scenarioQualitySummary.LOW,
+    },
+
+    diagnostics: {
+      crr_hybrid_policy: crrHybridDiagnostics,
     },
 
     top_candidates: topCandidates,

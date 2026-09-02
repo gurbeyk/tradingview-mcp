@@ -198,6 +198,45 @@ describe('J) determinism', () => {
 });
 
 describe('output shape / AI safety contract', () => {
+  it('keeps CRR hybrid diagnostics guarded and not requested by default', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    assert.equal(result.diagnostics.crr_hybrid_policy.status, 'NOT_REQUESTED');
+    assert.equal(result.diagnostics.crr_hybrid_policy.mode, 'DIAGNOSTIC_ONLY_NO_RANKING_CHANGE');
+  });
+
+  it('reports CRR hybrid diagnostics unavailable when requested without a market-input provider', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps());
+    assert.equal(result.diagnostics.crr_hybrid_policy.status, 'UNAVAILABLE');
+    assert.equal(result.diagnostics.crr_hybrid_policy.reason, 'CRR_SHADOW_MARKET_INPUT_PROVIDER_NOT_CONFIGURED');
+  });
+
+  it('adds CRR hybrid diagnostics without changing ranking semantics when a provider is injected', async () => {
+    const base = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    const withDiagnostics = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, {
+      ...mockDeps(),
+      buildCrrShadowMarketInputs: async ({ expirations }) => new Map(expirations.map(({ expiration, dte }) => [expiration, {
+        expiration,
+        days_to_expiry: dte,
+        discount_rate: 0.04,
+        discount_rate_source: 'TEST_TREASURY',
+        discount_rate_as_of_utc: '2026-01-01',
+        dividend_input: { mode: 'ZERO_DIVIDEND_CONFIRMED', annualized_yield: 0, warnings: [] },
+        borrow_input: { fee_rate: null, source: 'NOT_CONNECTED', warnings: ['BORROW_DATA_UNAVAILABLE'] },
+        effective_carry_yield: 0,
+        mode: 'PARTIAL_EXTERNAL_INPUTS',
+        overall_confidence: 'MEDIUM',
+        warnings: ['BORROW_DATA_UNAVAILABLE'],
+      }])),
+    });
+
+    assert.deepEqual(withDiagnostics.top_candidates.map(c => c.candidate_id), base.top_candidates.map(c => c.candidate_id));
+    assert.equal(withDiagnostics.ranking.top_trade_candidate_id, base.ranking.top_trade_candidate_id);
+    assert.equal(withDiagnostics.ranking.decision_state, base.ranking.decision_state);
+    assert.equal(withDiagnostics.diagnostics.crr_hybrid_policy.status, 'AVAILABLE');
+    assert.ok(withDiagnostics.diagnostics.crr_hybrid_policy.summary.total_candidates > 0);
+    assert.ok(withDiagnostics.diagnostics.crr_hybrid_policy.candidates.length > 0);
+  });
+
   it('includes an ai_contract with rules and only allowed candidate ids', async () => {
     const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
     assert.ok(Array.isArray(result.ai_contract.rules) && result.ai_contract.rules.length > 0);
