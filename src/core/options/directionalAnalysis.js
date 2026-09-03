@@ -19,6 +19,7 @@ import { generateCandidateScenarioResults as _generateCandidateScenarioResults }
 import { rankStrategyCandidates as _rankStrategyCandidates } from './strategyRanking.js';
 import { generateCandidateScenarioResultsCrrShadow as _generateCandidateScenarioResultsCrrShadow } from './marketInputs/crrShadowScenario.js';
 import { evaluateHybridCrrPolicy as _evaluateHybridCrrPolicy } from './marketInputs/hybridCrrPolicy.js';
+import { buildTradingViewCrrShadowMarketInputs as _buildCrrShadowMarketInputs } from './marketInputs/tradingViewCrrShadowMarketInputs.js';
 
 const round2 = (v) => (v == null || !Number.isFinite(v) ? null : Math.round(v * 100) / 100);
 
@@ -315,7 +316,12 @@ async function buildCrrHybridDiagnostics({
     };
   }
 
-  const buildCrrShadowMarketInputs = deps.buildCrrShadowMarketInputs;
+  // Phase 2D.3 — defaults to the non-IBKR TradingView+Treasury-fallback
+  // builder (tradingViewCrrShadowMarketInputs.js) unless a test/deps
+  // override supplies a different provider. Still fully opt-in: this
+  // branch only runs when include_crr_hybrid_diagnostics is true, and its
+  // output only ever reaches diagnostics.crr_hybrid_policy.
+  const buildCrrShadowMarketInputs = deps.buildCrrShadowMarketInputs ?? _buildCrrShadowMarketInputs;
   if (typeof buildCrrShadowMarketInputs !== 'function') {
     return {
       status: 'UNAVAILABLE',

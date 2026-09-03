@@ -35,9 +35,9 @@ function buildFixtureContracts({ dte = 45, expiration = '2026-10-16' } = {}) {
   ];
 }
 
-function mockDeps({ price = 100, chainCompleteness = 'COMPLETE', chainWarnings = [], contracts } = {}) {
+function mockDeps({ price = 100, chainCompleteness = 'COMPLETE', chainWarnings = [], contracts, dividendYieldPct = null } = {}) {
   return {
-    getKeyStats: async () => ({ price }),
+    getKeyStats: async () => (dividendYieldPct == null ? { price } : { price, dividend_yield_pct: dividendYieldPct }),
     getOptionChain: async () => ({
       symbol: 'TEST:FOO', source: 'TradingView Options Scanner', source_endpoint: '/options/scan2',
       retrieved_at_utc: '2026-01-01T00:00:00Z', chain_completeness: chainCompleteness, warnings: chainWarnings,
@@ -204,10 +204,69 @@ describe('output shape / AI safety contract', () => {
     assert.equal(result.diagnostics.crr_hybrid_policy.mode, 'DIAGNOSTIC_ONLY_NO_RANKING_CHANGE');
   });
 
-  it('reports CRR hybrid diagnostics unavailable when requested without a market-input provider', async () => {
-    const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps());
+  it('reports CRR hybrid diagnostics unavailable when the provider hook is explicitly disabled', async () => {
+    // Phase 2D.3 wires a real default provider (see below), so "no provider
+    // configured" must now be forced explicitly to exercise this path —
+    // `false` is not nullish, so it survives the `??` default and still
+    // fails the typeof-function check.
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, {
+      ...mockDeps(),
+      buildCrrShadowMarketInputs: false,
+    });
     assert.equal(result.diagnostics.crr_hybrid_policy.status, 'UNAVAILABLE');
     assert.equal(result.diagnostics.crr_hybrid_policy.reason, 'CRR_SHADOW_MARKET_INPUT_PROVIDER_NOT_CONFIGURED');
+  });
+
+  describe('Phase 2D.3 — default non-IBKR CRR diagnostic market-input provider', () => {
+    it('returns AVAILABLE by default (no deps override) with PARTIAL_EXTERNAL_INPUTS and borrow unavailable', async () => {
+      const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0.5 }));
+      const diag = result.diagnostics.crr_hybrid_policy;
+      assert.equal(diag.status, 'AVAILABLE');
+      assert.ok(diag.market_inputs.length > 0);
+      for (const mi of diag.market_inputs) {
+        assert.equal(mi.mode, 'PARTIAL_EXTERNAL_INPUTS');
+        assert.equal(mi.borrow_source, 'NOT_CONNECTED');
+        assert.ok(mi.warnings.includes('BORROW_DATA_UNAVAILABLE'));
+        assert.notEqual(mi.mode, 'FULL_EXTERNAL_INPUTS');
+      }
+    });
+
+    it('treats an exact 0% TradingView dividend yield as ZERO_DIVIDEND_CONFIRMED (documented zero, e.g. PANW)', async () => {
+      const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0 }));
+      const diag = result.diagnostics.crr_hybrid_policy;
+      assert.equal(diag.status, 'AVAILABLE');
+      for (const mi of diag.market_inputs) assert.equal(mi.dividend_mode, 'ZERO_DIVIDEND_CONFIRMED');
+    });
+
+    it('uses TRAILING_DIVIDEND_YIELD_APPROXIMATION for a positive TradingView yield', async () => {
+      const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0.33 }));
+      const diag = result.diagnostics.crr_hybrid_policy;
+      for (const mi of diag.market_inputs) assert.equal(mi.dividend_mode, 'TRAILING_DIVIDEND_YIELD_APPROXIMATION');
+    });
+
+    it('fails safely (no fabricated data) when dividend data is unavailable, without crashing the analysis', async () => {
+      // mockDeps() default omits dividend_yield_pct entirely.
+      const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps());
+      const diag = result.diagnostics.crr_hybrid_policy;
+      assert.equal(diag.status, 'AVAILABLE'); // the provider itself still runs and returns structured records
+      for (const mi of diag.market_inputs) {
+        assert.equal(mi.mode, 'MARKET_INPUT_UNAVAILABLE');
+        assert.equal(mi.dividend_mode, 'DIVIDEND_DATA_UNAVAILABLE');
+      }
+    });
+
+    it('does not change ranking order, top candidate, decision state, score, or confidence when the default diagnostics are enabled', async () => {
+      const base = await analyzeDirectional(BULLISH_BASE, mockDeps({ dividendYieldPct: 0.5 }));
+      const withDiagnostics = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0.5 }));
+
+      assert.deepEqual(withDiagnostics.top_candidates.map(c => c.candidate_id), base.top_candidates.map(c => c.candidate_id));
+      assert.equal(withDiagnostics.ranking.top_trade_candidate_id, base.ranking.top_trade_candidate_id);
+      assert.equal(withDiagnostics.ranking.decision_state, base.ranking.decision_state);
+      assert.deepEqual(withDiagnostics.top_candidates.map(c => c.score), base.top_candidates.map(c => c.score));
+      assert.deepEqual(withDiagnostics.top_candidates.map(c => c.confidence), base.top_candidates.map(c => c.confidence));
+      assert.deepEqual(withDiagnostics.top_candidates.map(c => c.consideration_eligible), base.top_candidates.map(c => c.consideration_eligible));
+      assert.equal(withDiagnostics.diagnostics.crr_hybrid_policy.status, 'AVAILABLE');
+    });
   });
 
   it('adds CRR hybrid diagnostics without changing ranking semantics when a provider is injected', async () => {
