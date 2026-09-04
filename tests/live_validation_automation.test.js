@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { describe, it } from 'node:test';
 
 import {
@@ -8,6 +11,8 @@ import {
   evaluateLiveValidationSummary,
   summarizeAnalysisPacket,
 } from '../src/core/options/liveValidationAutomation.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function packet(overrides = {}) {
   return {
@@ -157,5 +162,79 @@ describe('aggregateLiveValidationResults()', () => {
     assert.equal(result.by_decision_state.TRADE_CANDIDATES_AVAILABLE, 2);
     assert.equal(result.by_diagnostics_status.AVAILABLE, 1);
     assert.equal(result.by_diagnostics_status.UNAVAILABLE, 1);
+  });
+});
+
+describe('Phase 2F.2 — frozen live-validation fixture regression', () => {
+  // Phase 2F.1 decided against live CDP validation in CI. This locks the
+  // Phase 2F.0 live smoke evidence (2026-09-04) as a frozen, CI-safe
+  // fixture: no TradingView/MCP/CDP/network calls, just replaying stored
+  // summaries/acceptance results through the same pure helpers.
+  const fixturePath = path.join(__dirname, 'fixtures', 'phase2f0-live-validation-2026-09-04.json');
+  const fixture = JSON.parse(readFileSync(fixturePath, 'utf8'));
+
+  it('locks the aggregate run counts', () => {
+    assert.equal(fixture.aggregate.total_runs, 6);
+    assert.equal(fixture.aggregate.passed_runs, 6);
+    assert.equal(fixture.aggregate.failed_runs, 0);
+  });
+
+  it('confirms diagnostics were AVAILABLE and isolated for every run', () => {
+    for (const run of fixture.runs) {
+      assert.equal(run.summary.diagnostics_status, 'AVAILABLE', `${run.symbol}/${run.profile_id}`);
+      assert.equal(run.summary.diagnostics_mode, 'DIAGNOSTIC_ONLY_NO_RANKING_CHANGE', `${run.symbol}/${run.profile_id}`);
+    }
+  });
+
+  it('confirms no run reached FULL_EXTERNAL_INPUTS and borrow stayed explicitly unavailable', () => {
+    for (const run of fixture.runs) {
+      assert.ok(!run.summary.market_input_modes.includes('FULL_EXTERNAL_INPUTS'), `${run.symbol}/${run.profile_id}`);
+      const borrowExplicitlyUnavailable = run.summary.market_input_warnings.includes('BORROW_DATA_UNAVAILABLE')
+        || run.summary.borrow_sources.includes('NOT_CONNECTED');
+      assert.ok(borrowExplicitlyUnavailable, `${run.symbol}/${run.profile_id}`);
+    }
+  });
+
+  it('covers both profiles and all three symbols', () => {
+    const profileIds = new Set(fixture.runs.map(r => r.profile_id));
+    const symbols = new Set(fixture.runs.map(r => r.symbol));
+
+    assert.ok(profileIds.has('BULLISH_BASELINE_30D'));
+    assert.ok(profileIds.has('BEARISH_ELIGIBLE_60_90D'));
+    assert.ok(symbols.has('NASDAQ:NVDA'));
+    assert.ok(symbols.has('NASDAQ:AAPL'));
+    assert.ok(symbols.has('NASDAQ:PANW'));
+  });
+
+  it('confirms at least one bearish run reached TRADE_CANDIDATES_AVAILABLE', () => {
+    const bearishTradeRuns = fixture.runs.filter(r => r.profile_id === 'BEARISH_ELIGIBLE_60_90D'
+      && r.summary.decision_state === 'TRADE_CANDIDATES_AVAILABLE');
+    assert.ok(bearishTradeRuns.length >= 1);
+  });
+
+  it('confirms bearish AAPL surfaced LONG_PUT alongside the top strategy, if present in the evidence', () => {
+    const bearishAapl = fixture.runs.find(r => r.symbol === 'NASDAQ:AAPL' && r.profile_id === 'BEARISH_ELIGIBLE_60_90D');
+    assert.ok(bearishAapl, 'expected a bearish AAPL run in the fixture');
+    const surfaced = [...bearishAapl.summary.top5_strategy_types, ...bearishAapl.summary.surfaced_strategy_types];
+    if (surfaced.length > 0) {
+      assert.ok(surfaced.includes('LONG_PUT'), 'expected LONG_PUT among bearish AAPL strategy types');
+    }
+  });
+
+  it('re-evaluates every stored summary through evaluateLiveValidationSummary() and matches the recorded acceptance', () => {
+    for (const run of fixture.runs) {
+      const recomputed = evaluateLiveValidationSummary(run.summary);
+      assert.equal(recomputed.passed, true, `${run.symbol}/${run.profile_id}`);
+      assert.equal(recomputed.passed, run.acceptance.passed, `${run.symbol}/${run.profile_id}`);
+      assert.deepEqual(recomputed.failed, run.acceptance.failed, `${run.symbol}/${run.profile_id}`);
+    }
+  });
+
+  it('re-aggregates the stored runs and matches the recorded aggregate exactly', () => {
+    const recomputed = aggregateLiveValidationResults(fixture.runs.map(run => ({
+      summary: run.summary,
+      acceptance: evaluateLiveValidationSummary(run.summary),
+    })));
+    assert.deepEqual(recomputed, fixture.aggregate);
   });
 });

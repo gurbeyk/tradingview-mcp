@@ -1,0 +1,680 @@
+{
+  "phase": "Phase 2F.0 Live Validation Automation",
+  "status": "MANUAL_RUNNER_NO_PRODUCTION_SCHEDULER",
+  "started_at_utc": "2026-09-04T09:39:48.743Z",
+  "completed_at_utc": "2026-09-04T09:40:01.659Z",
+  "symbols": [
+    "NASDAQ:NVDA",
+    "NASDAQ:AAPL",
+    "NASDAQ:PANW"
+  ],
+  "profiles": [
+    "BULLISH_BASELINE_30D",
+    "BEARISH_ELIGIBLE_60_90D"
+  ],
+  "aggregate": {
+    "total_runs": 6,
+    "passed_runs": 6,
+    "failed_runs": 0,
+    "by_decision_state": {
+      "NO_TRADE_BASELINE_ONLY": 4,
+      "TRADE_CANDIDATES_AVAILABLE": 2
+    },
+    "by_diagnostics_status": {
+      "AVAILABLE": 6
+    }
+  },
+  "runs": [
+    {
+      "symbol": "NASDAQ:NVDA",
+      "profile_id": "BULLISH_BASELINE_30D",
+      "summary": {
+        "profile_id": "BULLISH_BASELINE_30D",
+        "symbol": "NASDAQ:NVDA",
+        "analysis_snapshot_id": "5a783bb42f66c784",
+        "analysis_as_of_utc": "2026-09-04T09:39:55.982Z",
+        "direction": "bullish",
+        "underlying_price": 228.45,
+        "base_target_price": 239.87,
+        "horizon_days": 30,
+        "max_loss": 1000,
+        "max_spread_pct": 25,
+        "min_dte": null,
+        "max_dte": null,
+        "chain_completeness": "COMPLETE",
+        "data_warnings": [],
+        "candidate_count": 62,
+        "ranking_model": "RANKING_MODEL_V1",
+        "decision_state": "NO_TRADE_BASELINE_ONLY",
+        "top_trade_candidate_id": null,
+        "top5_candidate_ids": [
+          "BULL_CALL_SPREAD::NASDAQ:NVDA::2026-10-16::OPRA:NVDA261016C230.0::OPRA:NVDA261016C235.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:NVDA::2026-10-09::OPRA:NVDA261009C230.0::OPRA:NVDA261009C235.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:NVDA::2026-10-09::OPRA:NVDA261009C220.0::OPRA:NVDA261009C235.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:NVDA::2026-10-16::OPRA:NVDA261016C220.0::OPRA:NVDA261016C235.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:NVDA::2026-10-09::OPRA:NVDA261009C225.0::OPRA:NVDA261009C235.0::conservative"
+        ],
+        "top5_strategy_types": [
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD"
+        ],
+        "surfaced_strategy_types": [
+          "BULL_CALL_SPREAD"
+        ],
+        "diagnostics_status": "AVAILABLE",
+        "diagnostics_mode": "DIAGNOSTIC_ONLY_NO_RANKING_CHANGE",
+        "hybrid_policy_summary": {
+          "total_candidates": 62,
+          "by_action": {
+            "HYBRID_REPRICE_CANDIDATE": 56,
+            "CRR_SHADOW_REVIEW": 4,
+            "NO_ACTION": 2
+          },
+          "crr_shadow_available_count": 62,
+          "local_warning_count": 60
+        },
+        "market_input_modes": [
+          "PARTIAL_EXTERNAL_INPUTS"
+        ],
+        "market_input_warnings": [
+          "TREASURY_RATE_FROZEN_FALLBACK_NOT_LIVE",
+          "CONTINUOUS_DIVIDEND_APPROXIMATION",
+          "TRAILING_NOT_FORWARD",
+          "BORROW_DATA_UNAVAILABLE"
+        ],
+        "borrow_sources": [
+          "NOT_CONNECTED"
+        ],
+        "top_candidate_hybrid_actions": [
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:NVDA::2026-10-09::OPRA:NVDA261009C220.0::OPRA:NVDA261009C230.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_HIGH"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:NVDA::2026-10-09::OPRA:NVDA261009C220.0::OPRA:NVDA261009C235.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_HIGH"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:NVDA::2026-10-09::OPRA:NVDA261009C225.0::OPRA:NVDA261009C235.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_HIGH"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:NVDA::2026-10-09::OPRA:NVDA261009C230.0::OPRA:NVDA261009C235.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_HIGH"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:NVDA::2026-10-16::OPRA:NVDA261016C220.0::OPRA:NVDA261016C230.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          }
+        ]
+      },
+      "acceptance": {
+        "passed": true,
+        "checks": {
+          "DIAGNOSTICS_AVAILABLE": true,
+          "DIAGNOSTIC_MODE_ISOLATED": true,
+          "NO_FULL_EXTERNAL_INPUTS": true,
+          "BORROW_EXPLICITLY_UNAVAILABLE": true,
+          "LOCAL_RANKING_MODEL": true,
+          "COMPLETED_WITHOUT_TOOL_ERROR": true
+        },
+        "failed": []
+      }
+    },
+    {
+      "symbol": "NASDAQ:AAPL",
+      "profile_id": "BULLISH_BASELINE_30D",
+      "summary": {
+        "profile_id": "BULLISH_BASELINE_30D",
+        "symbol": "NASDAQ:AAPL",
+        "analysis_snapshot_id": "d18f82acc6829e5c",
+        "analysis_as_of_utc": "2026-09-04T09:39:57.426Z",
+        "direction": "bullish",
+        "underlying_price": 328.21,
+        "base_target_price": 344.62,
+        "horizon_days": 30,
+        "max_loss": 1000,
+        "max_spread_pct": 25,
+        "min_dte": null,
+        "max_dte": null,
+        "chain_completeness": "COMPLETE",
+        "data_warnings": [],
+        "candidate_count": 52,
+        "ranking_model": "RANKING_MODEL_V1",
+        "decision_state": "NO_TRADE_BASELINE_ONLY",
+        "top_trade_candidate_id": null,
+        "top5_candidate_ids": [
+          "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-16::OPRA:AAPL261016C315.0::OPRA:AAPL261016C325.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-09::OPRA:AAPL261009C320.0::OPRA:AAPL261009C335.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-16::OPRA:AAPL261016C320.0::OPRA:AAPL261016C325.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-09::OPRA:AAPL261009C320.0::OPRA:AAPL261009C330.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-16::OPRA:AAPL261016C315.0::OPRA:AAPL261016C330.0::conservative"
+        ],
+        "top5_strategy_types": [
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD"
+        ],
+        "surfaced_strategy_types": [
+          "BULL_CALL_SPREAD"
+        ],
+        "diagnostics_status": "AVAILABLE",
+        "diagnostics_mode": "DIAGNOSTIC_ONLY_NO_RANKING_CHANGE",
+        "hybrid_policy_summary": {
+          "total_candidates": 52,
+          "by_action": {
+            "HYBRID_REPRICE_CANDIDATE": 36,
+            "CRR_SHADOW_REVIEW": 14,
+            "NO_ACTION": 2
+          },
+          "crr_shadow_available_count": 52,
+          "local_warning_count": 50
+        },
+        "market_input_modes": [
+          "PARTIAL_EXTERNAL_INPUTS"
+        ],
+        "market_input_warnings": [
+          "TREASURY_RATE_FROZEN_FALLBACK_NOT_LIVE",
+          "CONTINUOUS_DIVIDEND_APPROXIMATION",
+          "TRAILING_NOT_FORWARD",
+          "BORROW_DATA_UNAVAILABLE"
+        ],
+        "borrow_sources": [
+          "NOT_CONNECTED"
+        ],
+        "top_candidate_hybrid_actions": [
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-09::OPRA:AAPL261009C320.0::OPRA:AAPL261009C325.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-09::OPRA:AAPL261009C320.0::OPRA:AAPL261009C330.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-09::OPRA:AAPL261009C320.0::OPRA:AAPL261009C335.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-09::OPRA:AAPL261009C325.0::OPRA:AAPL261009C335.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-16::OPRA:AAPL261016C315.0::OPRA:AAPL261016C320.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW"
+          }
+        ]
+      },
+      "acceptance": {
+        "passed": true,
+        "checks": {
+          "DIAGNOSTICS_AVAILABLE": true,
+          "DIAGNOSTIC_MODE_ISOLATED": true,
+          "NO_FULL_EXTERNAL_INPUTS": true,
+          "BORROW_EXPLICITLY_UNAVAILABLE": true,
+          "LOCAL_RANKING_MODEL": true,
+          "COMPLETED_WITHOUT_TOOL_ERROR": true
+        },
+        "failed": []
+      }
+    },
+    {
+      "symbol": "NASDAQ:PANW",
+      "profile_id": "BULLISH_BASELINE_30D",
+      "summary": {
+        "profile_id": "BULLISH_BASELINE_30D",
+        "symbol": "NASDAQ:PANW",
+        "analysis_snapshot_id": "05b0f5f98a68fea2",
+        "analysis_as_of_utc": "2026-09-04T09:39:58.893Z",
+        "direction": "bullish",
+        "underlying_price": 331.94,
+        "base_target_price": 348.54,
+        "horizon_days": 30,
+        "max_loss": 1000,
+        "max_spread_pct": 25,
+        "min_dte": null,
+        "max_dte": null,
+        "chain_completeness": "COMPLETE",
+        "data_warnings": [],
+        "candidate_count": 30,
+        "ranking_model": "RANKING_MODEL_V1",
+        "decision_state": "NO_TRADE_BASELINE_ONLY",
+        "top_trade_candidate_id": null,
+        "top5_candidate_ids": [
+          "BUY_STOCK::NASDAQ:PANW::331.94::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:PANW::2026-10-16::OPRA:PANW261016C320.0::OPRA:PANW261016C330.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:PANW::2026-10-16::OPRA:PANW261016C310.0::OPRA:PANW261016C320.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:PANW::2026-10-16::OPRA:PANW261016C330.0::OPRA:PANW261016C350.0::conservative",
+          "BULL_CALL_SPREAD::NASDAQ:PANW::2026-10-16::OPRA:PANW261016C330.0::OPRA:PANW261016C340.0::conservative"
+        ],
+        "top5_strategy_types": [
+          "BUY_STOCK",
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD",
+          "BULL_CALL_SPREAD"
+        ],
+        "surfaced_strategy_types": [
+          "BUY_STOCK",
+          "BULL_CALL_SPREAD"
+        ],
+        "diagnostics_status": "AVAILABLE",
+        "diagnostics_mode": "DIAGNOSTIC_ONLY_NO_RANKING_CHANGE",
+        "hybrid_policy_summary": {
+          "total_candidates": 30,
+          "by_action": {
+            "CRR_SHADOW_REVIEW": 6,
+            "HYBRID_REPRICE_CANDIDATE": 22,
+            "NO_ACTION": 2
+          },
+          "crr_shadow_available_count": 30,
+          "local_warning_count": 28
+        },
+        "market_input_modes": [
+          "PARTIAL_EXTERNAL_INPUTS"
+        ],
+        "market_input_warnings": [
+          "TREASURY_RATE_FROZEN_FALLBACK_NOT_LIVE",
+          "BORROW_DATA_UNAVAILABLE"
+        ],
+        "borrow_sources": [
+          "NOT_CONNECTED"
+        ],
+        "top_candidate_hybrid_actions": [
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:PANW::2026-10-09::OPRA:PANW261009C320.0::OPRA:PANW261009C330.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:PANW::2026-10-09::OPRA:PANW261009C325.0::OPRA:PANW261009C340.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_HIGH"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:PANW::2026-10-09::OPRA:PANW261009C330.0::OPRA:PANW261009C340.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_HIGH"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:PANW::2026-10-16::OPRA:PANW261016C310.0::OPRA:PANW261016C320.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BULL_CALL_SPREAD::NASDAQ:PANW::2026-10-16::OPRA:PANW261016C320.0::OPRA:PANW261016C330.0::conservative",
+            "strategy_type": "BULL_CALL_SPREAD",
+            "action": "HYBRID_REPRICE_CANDIDATE",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          }
+        ]
+      },
+      "acceptance": {
+        "passed": true,
+        "checks": {
+          "DIAGNOSTICS_AVAILABLE": true,
+          "DIAGNOSTIC_MODE_ISOLATED": true,
+          "NO_FULL_EXTERNAL_INPUTS": true,
+          "BORROW_EXPLICITLY_UNAVAILABLE": true,
+          "LOCAL_RANKING_MODEL": true,
+          "COMPLETED_WITHOUT_TOOL_ERROR": true
+        },
+        "failed": []
+      }
+    },
+    {
+      "symbol": "NASDAQ:NVDA",
+      "profile_id": "BEARISH_ELIGIBLE_60_90D",
+      "summary": {
+        "profile_id": "BEARISH_ELIGIBLE_60_90D",
+        "symbol": "NASDAQ:NVDA",
+        "analysis_snapshot_id": "64756aa8041ce7d6",
+        "analysis_as_of_utc": "2026-09-04T09:39:59.674Z",
+        "direction": "bearish",
+        "underlying_price": 228.45,
+        "base_target_price": 210.17,
+        "horizon_days": 30,
+        "max_loss": 2500,
+        "max_spread_pct": 25,
+        "min_dte": 60,
+        "max_dte": 90,
+        "chain_completeness": "COMPLETE",
+        "data_warnings": [],
+        "candidate_count": 35,
+        "ranking_model": "RANKING_MODEL_V1",
+        "decision_state": "TRADE_CANDIDATES_AVAILABLE",
+        "top_trade_candidate_id": "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P230.0::OPRA:NVDA261120P235.0::conservative",
+        "top5_candidate_ids": [
+          "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P230.0::OPRA:NVDA261120P235.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P230.0::OPRA:NVDA261120P245.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P225.0::OPRA:NVDA261120P235.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P220.0::OPRA:NVDA261120P235.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P235.0::OPRA:NVDA261120P245.0::conservative"
+        ],
+        "top5_strategy_types": [
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD"
+        ],
+        "surfaced_strategy_types": [
+          "BEAR_PUT_SPREAD",
+          "LONG_PUT"
+        ],
+        "diagnostics_status": "AVAILABLE",
+        "diagnostics_mode": "DIAGNOSTIC_ONLY_NO_RANKING_CHANGE",
+        "hybrid_policy_summary": {
+          "total_candidates": 35,
+          "by_action": {
+            "CRR_SHADOW_REVIEW": 34,
+            "NO_ACTION": 1
+          },
+          "crr_shadow_available_count": 35,
+          "local_warning_count": 22
+        },
+        "market_input_modes": [
+          "PARTIAL_EXTERNAL_INPUTS"
+        ],
+        "market_input_warnings": [
+          "TREASURY_RATE_FROZEN_FALLBACK_NOT_LIVE",
+          "CONTINUOUS_DIVIDEND_APPROXIMATION",
+          "TRAILING_NOT_FORWARD",
+          "BORROW_DATA_UNAVAILABLE"
+        ],
+        "borrow_sources": [
+          "NOT_CONNECTED"
+        ],
+        "top_candidate_hybrid_actions": [
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P210.0::OPRA:NVDA261120P225.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P215.0::OPRA:NVDA261120P225.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P215.0::OPRA:NVDA261120P230.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P220.0::OPRA:NVDA261120P230.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:NVDA::2026-11-20::OPRA:NVDA261120P220.0::OPRA:NVDA261120P235.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          }
+        ]
+      },
+      "acceptance": {
+        "passed": true,
+        "checks": {
+          "DIAGNOSTICS_AVAILABLE": true,
+          "DIAGNOSTIC_MODE_ISOLATED": true,
+          "NO_FULL_EXTERNAL_INPUTS": true,
+          "BORROW_EXPLICITLY_UNAVAILABLE": true,
+          "LOCAL_RANKING_MODEL": true,
+          "COMPLETED_WITHOUT_TOOL_ERROR": true
+        },
+        "failed": []
+      }
+    },
+    {
+      "symbol": "NASDAQ:AAPL",
+      "profile_id": "BEARISH_ELIGIBLE_60_90D",
+      "summary": {
+        "profile_id": "BEARISH_ELIGIBLE_60_90D",
+        "symbol": "NASDAQ:AAPL",
+        "analysis_snapshot_id": "de9c7ec0bd794ac9",
+        "analysis_as_of_utc": "2026-09-04T09:40:00.662Z",
+        "direction": "bearish",
+        "underlying_price": 328.21,
+        "base_target_price": 301.95,
+        "horizon_days": 30,
+        "max_loss": 2500,
+        "max_spread_pct": 25,
+        "min_dte": 60,
+        "max_dte": 90,
+        "chain_completeness": "COMPLETE",
+        "data_warnings": [],
+        "candidate_count": 36,
+        "ranking_model": "RANKING_MODEL_V1",
+        "decision_state": "TRADE_CANDIDATES_AVAILABLE",
+        "top_trade_candidate_id": "BEAR_PUT_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P325.0::OPRA:AAPL261120P330.0::conservative",
+        "top5_candidate_ids": [
+          "BEAR_PUT_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P325.0::OPRA:AAPL261120P330.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P315.0::OPRA:AAPL261120P330.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P320.0::OPRA:AAPL261120P330.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P325.0::OPRA:AAPL261120P335.0::conservative",
+          "LONG_PUT::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P330.0::conservative"
+        ],
+        "top5_strategy_types": [
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD",
+          "LONG_PUT"
+        ],
+        "surfaced_strategy_types": [
+          "BEAR_PUT_SPREAD",
+          "LONG_PUT"
+        ],
+        "diagnostics_status": "AVAILABLE",
+        "diagnostics_mode": "DIAGNOSTIC_ONLY_NO_RANKING_CHANGE",
+        "hybrid_policy_summary": {
+          "total_candidates": 36,
+          "by_action": {
+            "CRR_SHADOW_REVIEW": 20,
+            "LOCAL_ONLY": 15,
+            "NO_ACTION": 1
+          },
+          "crr_shadow_available_count": 36,
+          "local_warning_count": 0
+        },
+        "market_input_modes": [
+          "PARTIAL_EXTERNAL_INPUTS"
+        ],
+        "market_input_warnings": [
+          "TREASURY_RATE_FROZEN_FALLBACK_NOT_LIVE",
+          "CONTINUOUS_DIVIDEND_APPROXIMATION",
+          "TRAILING_NOT_FORWARD",
+          "BORROW_DATA_UNAVAILABLE"
+        ],
+        "borrow_sources": [
+          "NOT_CONNECTED"
+        ],
+        "top_candidate_hybrid_actions": [
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P315.0::OPRA:AAPL261120P330.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P320.0::OPRA:AAPL261120P330.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P325.0::OPRA:AAPL261120P330.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P320.0::OPRA:AAPL261120P335.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120P325.0::OPRA:AAPL261120P335.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "CRR_SHADOW_REVIEW",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM"
+          }
+        ]
+      },
+      "acceptance": {
+        "passed": true,
+        "checks": {
+          "DIAGNOSTICS_AVAILABLE": true,
+          "DIAGNOSTIC_MODE_ISOLATED": true,
+          "NO_FULL_EXTERNAL_INPUTS": true,
+          "BORROW_EXPLICITLY_UNAVAILABLE": true,
+          "LOCAL_RANKING_MODEL": true,
+          "COMPLETED_WITHOUT_TOOL_ERROR": true
+        },
+        "failed": []
+      }
+    },
+    {
+      "symbol": "NASDAQ:PANW",
+      "profile_id": "BEARISH_ELIGIBLE_60_90D",
+      "summary": {
+        "profile_id": "BEARISH_ELIGIBLE_60_90D",
+        "symbol": "NASDAQ:PANW",
+        "analysis_snapshot_id": "3532cfed3d51f5b0",
+        "analysis_as_of_utc": "2026-09-04T09:40:01.566Z",
+        "direction": "bearish",
+        "underlying_price": 331.94,
+        "base_target_price": 305.38,
+        "horizon_days": 30,
+        "max_loss": 2500,
+        "max_spread_pct": 25,
+        "min_dte": 60,
+        "max_dte": 90,
+        "chain_completeness": "COMPLETE",
+        "data_warnings": [],
+        "candidate_count": 25,
+        "ranking_model": "RANKING_MODEL_V1",
+        "decision_state": "NO_TRADE_BASELINE_ONLY",
+        "top_trade_candidate_id": null,
+        "top5_candidate_ids": [
+          "BEAR_PUT_SPREAD::NASDAQ:PANW::2026-11-20::OPRA:PANW261120P330.0::OPRA:PANW261120P360.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:PANW::2026-11-20::OPRA:PANW261120P320.0::OPRA:PANW261120P350.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:PANW::2026-11-20::OPRA:PANW261120P340.0::OPRA:PANW261120P370.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:PANW::2026-11-20::OPRA:PANW261120P340.0::OPRA:PANW261120P360.0::conservative",
+          "BEAR_PUT_SPREAD::NASDAQ:PANW::2026-11-20::OPRA:PANW261120P330.0::OPRA:PANW261120P350.0::conservative"
+        ],
+        "top5_strategy_types": [
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD",
+          "BEAR_PUT_SPREAD"
+        ],
+        "surfaced_strategy_types": [
+          "BEAR_PUT_SPREAD"
+        ],
+        "diagnostics_status": "AVAILABLE",
+        "diagnostics_mode": "DIAGNOSTIC_ONLY_NO_RANKING_CHANGE",
+        "hybrid_policy_summary": {
+          "total_candidates": 25,
+          "by_action": {
+            "LOCAL_ONLY": 24,
+            "NO_ACTION": 1
+          },
+          "crr_shadow_available_count": 25,
+          "local_warning_count": 0
+        },
+        "market_input_modes": [
+          "PARTIAL_EXTERNAL_INPUTS"
+        ],
+        "market_input_warnings": [
+          "TREASURY_RATE_FROZEN_FALLBACK_NOT_LIVE",
+          "BORROW_DATA_UNAVAILABLE"
+        ],
+        "borrow_sources": [
+          "NOT_CONNECTED"
+        ],
+        "top_candidate_hybrid_actions": [
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:PANW::2026-11-20::OPRA:PANW261120P300.0::OPRA:PANW261120P330.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "LOCAL_ONLY",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:PANW::2026-11-20::OPRA:PANW261120P310.0::OPRA:PANW261120P340.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "LOCAL_ONLY",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:PANW::2026-11-20::OPRA:PANW261120P320.0::OPRA:PANW261120P340.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "LOCAL_ONLY",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:PANW::2026-11-20::OPRA:PANW261120P320.0::OPRA:PANW261120P350.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "LOCAL_ONLY",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW"
+          },
+          {
+            "candidate_id": "BEAR_PUT_SPREAD::NASDAQ:PANW::2026-11-20::OPRA:PANW261120P330.0::OPRA:PANW261120P350.0::conservative",
+            "strategy_type": "BEAR_PUT_SPREAD",
+            "action": "LOCAL_ONLY",
+            "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW"
+          }
+        ]
+      },
+      "acceptance": {
+        "passed": true,
+        "checks": {
+          "DIAGNOSTICS_AVAILABLE": true,
+          "DIAGNOSTIC_MODE_ISOLATED": true,
+          "NO_FULL_EXTERNAL_INPUTS": true,
+          "BORROW_EXPLICITLY_UNAVAILABLE": true,
+          "LOCAL_RANKING_MODEL": true,
+          "COMPLETED_WITHOUT_TOOL_ERROR": true
+        },
+        "failed": []
+      }
+    }
+  ]
+}
