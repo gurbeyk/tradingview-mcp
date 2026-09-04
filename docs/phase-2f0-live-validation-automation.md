@@ -127,3 +127,70 @@ Phase 2F.1 should decide whether this repo needs:
 - or a hybrid approach where live MCP/CDP validation remains operator-triggered
 
 Do not wire an always-on scheduler until that decision is made.
+
+## Live Smoke Validation — 2026-09-04
+
+**Command run:**
+
+```bash
+npm run phase2f0:live-validation
+```
+
+**Evidence path:**
+
+```text
+docs/fixtures/phase2f0-live-validation-automation-20260904/phase2f0-live-validation-automation.json
+```
+
+This was a live run against a running TradingView Desktop instance over CDP
+(port 9222), covering the default matrix (`NASDAQ:NVDA`, `NASDAQ:AAPL`,
+`NASDAQ:PANW` × `BULLISH_BASELINE_30D`, `BEARISH_ELIGIBLE_60_90D`).
+
+**Aggregate results:**
+
+- total runs: 6
+- passed runs: 6
+- failed runs: 0
+- decision-state distribution:
+  - `NO_TRADE_BASELINE_ONLY`: 4
+  - `TRADE_CANDIDATES_AVAILABLE`: 2
+- diagnostics status: `AVAILABLE` on all 6 runs
+- market-input mode: `PARTIAL_EXTERNAL_INPUTS` on all 6 runs
+
+**Bullish profile (`BULLISH_BASELINE_30D`) results:**
+
+| Symbol | Decision state | Top candidate type |
+|---|---|---|
+| NASDAQ:NVDA | NO_TRADE_BASELINE_ONLY | BULL_CALL_SPREAD (top5) |
+| NASDAQ:AAPL | NO_TRADE_BASELINE_ONLY | BULL_CALL_SPREAD (top5) |
+| NASDAQ:PANW | NO_TRADE_BASELINE_ONLY | BUY_STOCK (top5) |
+
+All three bullish runs landed on `NO_TRADE_BASELINE_ONLY` — no eligible trade
+candidate cleared the consideration gates under the assumed scenario, so the
+baseline was correctly preserved.
+
+**Bearish profile (`BEARISH_ELIGIBLE_60_90D`) results:**
+
+| Symbol | Decision state | Top trade candidate |
+|---|---|---|
+| NASDAQ:NVDA | TRADE_CANDIDATES_AVAILABLE | BEAR_PUT_SPREAD |
+| NASDAQ:AAPL | TRADE_CANDIDATES_AVAILABLE | BEAR_PUT_SPREAD (top1), LONG_PUT in top5 |
+| NASDAQ:PANW | NO_TRADE_BASELINE_ONLY | BEAR_PUT_SPREAD (top5, not eligible) |
+
+Bearish NVDA and AAPL reached `TRADE_CANDIDATES_AVAILABLE`, confirming the
+60-90 DTE window avoids the Phase 2D.6 `LARGE_TIME_STEP` trap for this
+direction. Bearish AAPL's top-5 also surfaced a `LONG_PUT` candidate alongside
+the spread, showing candidate-type diversity survives ranking.
+
+**Caveats:**
+
+- This is a point-in-time live TradingView/CDP validation run, not a
+  regression suite — results reflect market conditions and option chains at
+  the moment of the run and are not expected to reproduce exactly on a later
+  run.
+- All 6 runs used `PARTIAL_EXTERNAL_INPUTS`; no run exercised
+  `FULL_EXTERNAL_INPUTS` or the associated HIGH-confidence path.
+- This smoke run does not replace a scheduled or CI-style regression job —
+  Phase 2F.1 still needs to decide whether/how recurring validation runs.
+- No source code changes were required; the runner and helpers built in
+  Phase 2F.0 behaved as designed against live data.
