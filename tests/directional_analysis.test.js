@@ -304,10 +304,59 @@ describe('output shape / AI safety contract', () => {
     for (const c of result.top_candidates) assert.ok(allowedIds.has(c.candidate_id));
   });
 
+  it('includes deterministic agent_response_guidance tied to ranking and candidate eligibility', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    const guidance = result.agent_response_guidance;
+    assert.equal(guidance.version, 'OPTIONS_ANALYSIS_RESPONSE_GUIDANCE_V1');
+    assert.equal(guidance.audience, 'AGENT_OR_UI_CONSUMER');
+    assert.equal(guidance.primary_decision_source, 'ranking.decision_state');
+    assert.equal(guidance.candidate_status_source, 'top_candidates[].consideration_eligible');
+    assert.equal(guidance.numeric_source_of_truth, 'ai_contract.numeric_source_of_truth');
+    assert.equal(guidance.ranking_model, result.ranking.model);
+    assert.equal(guidance.decision_state, result.ranking.decision_state);
+    assert.equal(guidance.top_trade_candidate_id, result.ranking.top_trade_candidate_id);
+    assert.deepEqual(
+      guidance.eligible_top_candidate_ids,
+      result.top_candidates.filter(c => c.consideration_eligible).map(c => c.candidate_id),
+    );
+    assert.ok(guidance.required_mentions.some(r => r.includes('user-supplied target price')));
+    assert.ok(guidance.forbidden_claims.some(r => r.includes('recommendation')));
+  });
+
+  it('guides NO_TRADE_BASELINE_ONLY responses without promoting near misses', async () => {
+    const result = await analyzeDirectional({
+      ...BULLISH_BASE,
+      minimum_score_for_consideration: 99.99,
+    }, mockDeps());
+    const guidance = result.agent_response_guidance;
+    assert.equal(guidance.decision_state, 'NO_TRADE_BASELINE_ONLY');
+    assert.equal(guidance.top_trade_candidate_id, null);
+    assert.ok(guidance.required_mentions.some(r => r.includes('no candidate passed the consideration gates')));
+    assert.ok(guidance.forbidden_claims.some(r => r.includes('near-miss')));
+    assert.deepEqual(
+      guidance.low_confidence_candidate_ids,
+      [...result.top_candidates, ...result.near_miss_candidates]
+        .filter(c => c.confidence === 'LOW')
+        .map(c => c.candidate_id),
+    );
+  });
+
+  it('guides CRR diagnostic interpretation without changing the frozen diagnostic contract', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0.5 }));
+    const guidance = result.agent_response_guidance;
+    assert.equal(guidance.crr_hybrid_policy.status, 'AVAILABLE');
+    assert.equal(guidance.crr_hybrid_policy.mode, 'DIAGNOSTIC_ONLY_NO_RANKING_CHANGE');
+    assert.deepEqual(guidance.crr_hybrid_policy.action_counts, result.diagnostics.crr_hybrid_policy.summary.by_action);
+    assert.equal(guidance.crr_hybrid_policy.interpretation, 'EVIDENCE_ONLY_NO_RANKING_OR_RECOMMENDATION_EFFECT');
+    assert.ok(guidance.required_mentions.some(r => r.includes('evidence-only')));
+    assert.ok(guidance.forbidden_claims.some(r => r.includes('HYBRID_REPRICE_CANDIDATE')));
+  });
+
   it('includes field_provenance covering MARKET_NATIVE/ENGINE_CALCULATED/USER_INPUT/DETERMINISTIC_ASSUMPTION', async () => {
     const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
     assert.ok(result.field_provenance.MARKET_NATIVE.includes('bid'));
     assert.ok(result.field_provenance.ENGINE_CALCULATED.includes('max_loss'));
+    assert.ok(result.field_provenance.ENGINE_CALCULATED.includes('agent_response_guidance'));
     assert.ok(result.field_provenance.USER_INPUT.includes('base_target_price'));
     assert.ok(result.field_provenance.DETERMINISTIC_ASSUMPTION.some(f => f.includes('downside_target_price')));
   });
