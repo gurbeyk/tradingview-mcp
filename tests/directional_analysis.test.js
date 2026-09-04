@@ -336,3 +336,109 @@ describe('output shape / AI safety contract', () => {
     }
   });
 });
+
+describe('Phase 2E.1 — CRR hybrid diagnostic contract stabilization', () => {
+  // Freezes the public shape of diagnostics.crr_hybrid_policy documented in
+  // docs/crr-hybrid-diagnostic-contract.md. These tests assert field
+  // presence/type, not behavioral policy (that is hybrid_crr_policy.test.js's
+  // job) — a shape regression here should fail even if the underlying policy
+  // logic is otherwise untouched.
+
+  it('NOT_REQUESTED shape: exactly status + mode, nothing else', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    const diag = result.diagnostics.crr_hybrid_policy;
+    assert.deepEqual(Object.keys(diag).sort(), ['mode', 'status']);
+    assert.equal(diag.status, 'NOT_REQUESTED');
+    assert.equal(diag.mode, 'DIAGNOSTIC_ONLY_NO_RANKING_CHANGE');
+  });
+
+  it('UNAVAILABLE shape: status + mode + reason, provider explicitly disabled', async () => {
+    // The Phase 2D.3 default provider now makes a plain
+    // include_crr_hybrid_diagnostics: true request AVAILABLE, so this path
+    // must be forced via the dependency-injection seam (buildCrrShadowMarketInputs:
+    // false — not nullish, so it survives the `??` default).
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, {
+      ...mockDeps(),
+      buildCrrShadowMarketInputs: false,
+    });
+    const diag = result.diagnostics.crr_hybrid_policy;
+    assert.deepEqual(Object.keys(diag).sort(), ['mode', 'reason', 'status']);
+    assert.equal(diag.status, 'UNAVAILABLE');
+    assert.equal(diag.mode, 'DIAGNOSTIC_ONLY_NO_RANKING_CHANGE');
+    assert.equal(diag.reason, 'CRR_SHADOW_MARKET_INPUT_PROVIDER_NOT_CONFIGURED');
+  });
+
+  it('AVAILABLE shape: status + mode + market_inputs + summary + candidates, via the default non-IBKR provider', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0.5 }));
+    const diag = result.diagnostics.crr_hybrid_policy;
+    assert.deepEqual(Object.keys(diag).sort(), ['candidates', 'market_inputs', 'mode', 'status', 'summary']);
+    assert.equal(diag.status, 'AVAILABLE');
+    assert.equal(diag.mode, 'DIAGNOSTIC_ONLY_NO_RANKING_CHANGE');
+    assert.ok(Array.isArray(diag.market_inputs));
+    assert.ok(Array.isArray(diag.candidates));
+    assert.equal(typeof diag.summary, 'object');
+  });
+
+  it('summary carries exactly the four documented aggregate fields with the expected types', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0.5 }));
+    const { summary } = result.diagnostics.crr_hybrid_policy;
+    assert.deepEqual(Object.keys(summary).sort(), ['by_action', 'crr_shadow_available_count', 'local_warning_count', 'total_candidates']);
+    assert.equal(typeof summary.total_candidates, 'number');
+    assert.equal(typeof summary.by_action, 'object');
+    for (const count of Object.values(summary.by_action)) assert.equal(typeof count, 'number');
+    assert.equal(typeof summary.crr_shadow_available_count, 'number');
+    assert.equal(typeof summary.local_warning_count, 'number');
+    // by_action counts must sum to total_candidates — an internal consistency
+    // check, not just a shape check.
+    const sum = Object.values(summary.by_action).reduce((a, b) => a + b, 0);
+    assert.equal(sum, summary.total_candidates);
+  });
+
+  it('every scoped candidate entry carries exactly the seven documented public fields with expected types', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0.5 }));
+    const { candidates } = result.diagnostics.crr_hybrid_policy;
+    assert.ok(candidates.length > 0);
+    const EXPECTED_FIELDS = ['action', 'candidate_id', 'crr_shadow_available', 'local_warnings', 'max_model_disagreement_level', 'reasons', 'strategy_type'];
+    for (const c of candidates) {
+      assert.deepEqual(Object.keys(c).sort(), EXPECTED_FIELDS);
+      assert.equal(typeof c.candidate_id, 'string');
+      assert.equal(typeof c.strategy_type, 'string');
+      assert.ok(['NO_ACTION', 'LOCAL_ONLY', 'LOCAL_WITH_WARNING', 'CRR_SHADOW_REVIEW', 'HYBRID_REPRICE_CANDIDATE'].includes(c.action));
+      assert.ok(Array.isArray(c.reasons));
+      assert.ok(Array.isArray(c.local_warnings));
+      assert.ok(c.max_model_disagreement_level === null || ['MODEL_DISAGREEMENT_LOW', 'MODEL_DISAGREEMENT_MEDIUM', 'MODEL_DISAGREEMENT_HIGH'].includes(c.max_model_disagreement_level));
+      assert.equal(typeof c.crr_shadow_available, 'boolean');
+    }
+  });
+
+  it('every market_inputs entry carries exactly the eight documented public fields with expected types, and never claims FULL_EXTERNAL_INPUTS for the non-IBKR provider', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0.5 }));
+    const { market_inputs: marketInputs } = result.diagnostics.crr_hybrid_policy;
+    assert.ok(marketInputs.length > 0);
+    const EXPECTED_FIELDS = ['days_to_expiry', 'discount_rate_source', 'dividend_mode', 'expiration', 'mode', 'overall_confidence', 'warnings', 'borrow_source'];
+    for (const mi of marketInputs) {
+      assert.deepEqual(Object.keys(mi).sort(), [...EXPECTED_FIELDS].sort());
+      assert.equal(typeof mi.expiration, 'string');
+      assert.equal(typeof mi.days_to_expiry, 'number');
+      assert.equal(typeof mi.mode, 'string');
+      assert.notEqual(mi.mode, 'FULL_EXTERNAL_INPUTS');
+      assert.ok(mi.overall_confidence == null || typeof mi.overall_confidence === 'string');
+      assert.ok(mi.discount_rate_source == null || typeof mi.discount_rate_source === 'string');
+      assert.ok(mi.dividend_mode == null || typeof mi.dividend_mode === 'string');
+      assert.ok(mi.borrow_source == null || typeof mi.borrow_source === 'string');
+      assert.ok(Array.isArray(mi.warnings));
+    }
+  });
+
+  it('enabling diagnostics changes nothing in ranking.decision_state, ranking.top_trade_candidate_id, or any top_candidates ranking field', async () => {
+    const base = await analyzeDirectional(BULLISH_BASE, mockDeps({ dividendYieldPct: 0.5 }));
+    const withDiagnostics = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0.5 }));
+
+    assert.equal(withDiagnostics.ranking.decision_state, base.ranking.decision_state);
+    assert.equal(withDiagnostics.ranking.top_trade_candidate_id, base.ranking.top_trade_candidate_id);
+    assert.deepEqual(withDiagnostics.top_candidates.map(c => c.candidate_id), base.top_candidates.map(c => c.candidate_id));
+    assert.deepEqual(withDiagnostics.top_candidates.map(c => c.score), base.top_candidates.map(c => c.score));
+    assert.deepEqual(withDiagnostics.top_candidates.map(c => c.confidence), base.top_candidates.map(c => c.confidence));
+    assert.deepEqual(withDiagnostics.top_candidates.map(c => c.consideration_eligible), base.top_candidates.map(c => c.consideration_eligible));
+  });
+});
