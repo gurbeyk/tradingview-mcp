@@ -2,8 +2,15 @@
 
 **Date:** 2026-09-04
 **Branch:** `phase-2d-hybrid-policy`
-**Head commit:** `7f44cc8f903af0f6a1fe6daca0aec97657f9fa64`
+**Prepared against:** `7f44cc8f903af0f6a1fe6daca0aec97657f9fa64`
 **Type:** Packaging/handoff only — no code changes expected or made.
+
+Note: this document's own commit necessarily lands after the commit above
+(a handoff doc can't cite the hash of its own commit in advance). Treat
+`main..phase-2d-hybrid-policy` (i.e. the actual branch HEAD at PR-open
+time) as authoritative for the exact commit count and hash — this doc's
+own commit, and any small docs-only polish commit after it, add no
+further source changes to what's described below.
 
 ## Executive summary
 
@@ -26,7 +33,7 @@ for now (Phase 2E.0); this branch ships the diagnostic, not a migration.
 - **Head:** `7f44cc8f903af0f6a1fe6daca0aec97657f9fa64`
 - **Total commits ahead of `main`:** 29
 
-That 29-commit range includes the full options-feasibility feature arc
+That commit range includes the full options-feasibility feature arc
 (chain reading, strategy candidate generation, scenario pricing, ranking,
 the directional-analysis orchestrator, and the CRR shadow-pricing
 groundwork) going back to `fb29e95` (2026-07-21). **This handoff document
