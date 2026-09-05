@@ -181,6 +181,11 @@ rounding is allowed. Discuss only candidates in `ai_contract.allowed_candidate_i
 never invent a strike, expiration, contract, or spread leg. If a desired candidate
 isn't in the packet, say the analysis didn't return it.
 
+When present, use `agent_response_guidance` as the deterministic explanation
+checklist for the packet. It is not a second model and does not change any
+candidate result; it only summarizes which source fields control the user-facing
+explanation, which caveats must be surfaced, and which claims remain forbidden.
+
 ### Score / confidence / eligibility language
 - Score and grade are a **comparative heuristic under the supplied scenarios**, not
   a probability, win rate, or expected return. Never turn "score 77" into "77%
@@ -243,8 +248,9 @@ Before finalizing, verify: every mentioned candidate ID is in `allowed_candidate
 no contract/value was invented or recalculated; no score was called a probability;
 no delta was called probability-of-profit; no volume/OI was inferred; LOW confidence
 was surfaced where present; `NO_TRADE` was preserved when applicable; the user's
-target was clearly identified as user input. Print this audit only when testing,
-debugging, or explicitly requested — not in normal use.
+target was clearly identified as user input; `agent_response_guidance` was followed
+when present. Print this audit only when testing, debugging, or explicitly requested
+— not in normal use.
 
 Behavioral fixtures illustrating these rules: `docs/options-copilot-fixtures.md`.
 

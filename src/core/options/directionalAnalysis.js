@@ -223,7 +223,7 @@ function buildFieldProvenance(scenarioSources) {
     ENGINE_CALCULATED: [
       'entry_debit', 'capital_required', 'max_loss', 'max_profit', 'breakeven', 'reward_risk_ratio',
       'scenario_pnl', 'scenario_return_on_risk_pct', 'estimated_value', 'score', 'grade', 'confidence',
-      'component_scores', 'analysis_snapshot_id', 'diagnostics.crr_hybrid_policy',
+      'component_scores', 'analysis_snapshot_id', 'diagnostics.crr_hybrid_policy', 'agent_response_guidance',
     ],
     USER_INPUT: [
       'symbol', 'direction', 'horizon_days', 'max_loss (constraint)', 'base_target_price',
@@ -267,6 +267,69 @@ const KNOWN_LIMITATIONS = Object.freeze([
   'The scan2 request may be capped by TradingView at 4000 rows for very large chains; chain_completeness/warnings surface this, but the DTE window does not currently reduce the underlying request size.',
   'No AI/LLM reasoning is performed by this tool — it returns structured, deterministic data only.',
 ]);
+
+// ---------------------------------------------------------------------------
+// Phase 3A — deterministic agent/user response guidance
+// ---------------------------------------------------------------------------
+
+const RESPONSE_GUIDANCE_VERSION = 'OPTIONS_ANALYSIS_RESPONSE_GUIDANCE_V1';
+
+function buildAgentResponseGuidance({ rankingResult, topCandidates, nearMissCandidates, baselines, crrHybridDiagnostics }) {
+  const eligibleTopCandidateIds = topCandidates
+    .filter(c => c.consideration_eligible)
+    .map(c => c.candidate_id);
+  const lowConfidenceCandidateIds = [...topCandidates, ...nearMissCandidates]
+    .filter(c => c.confidence === 'LOW')
+    .map(c => c.candidate_id);
+  const baselineStrategyTypes = baselines.map(b => b.strategy_type);
+  const crrStatus = crrHybridDiagnostics?.status ?? 'NOT_REQUESTED';
+  const requiredMentions = [
+    'Identify the user-supplied target price as a scenario assumption, not an engine forecast.',
+    'Use ranking.decision_state and consideration_eligible as the source of trade-candidate status.',
+    'Use only ai_contract.allowed_candidate_ids when discussing specific candidates.',
+  ];
+  const forbiddenClaims = [
+    'Do not call any candidate a recommendation, buy signal, safe trade, or best trade.',
+    'Do not describe score or delta as a probability.',
+    'Do not invent contracts, strikes, expirations, prices, volume, or open interest.',
+  ];
+
+  if (rankingResult.decision_state === 'NO_TRADE_BASELINE_ONLY') {
+    requiredMentions.push('State that no candidate passed the consideration gates; near_miss_candidates are explanatory only.');
+    forbiddenClaims.push('Do not promote a near-miss candidate into an eligible trade.');
+  }
+  if (lowConfidenceCandidateIds.length > 0) {
+    requiredMentions.push('Explicitly label LOW-confidence candidates when mentioning them.');
+  }
+  if (crrStatus === 'AVAILABLE') {
+    requiredMentions.push('If CRR diagnostics are discussed, state that they are evidence-only and ranking-isolated.');
+    forbiddenClaims.push('Do not treat HYBRID_REPRICE_CANDIDATE as a trade recommendation or score override.');
+  }
+
+  return {
+    version: RESPONSE_GUIDANCE_VERSION,
+    audience: 'AGENT_OR_UI_CONSUMER',
+    primary_decision_source: 'ranking.decision_state',
+    candidate_status_source: 'top_candidates[].consideration_eligible',
+    numeric_source_of_truth: 'ai_contract.numeric_source_of_truth',
+    ranking_model: rankingResult.ranking_model,
+    decision_state: rankingResult.decision_state,
+    top_trade_candidate_id: rankingResult.top_trade_candidate_id,
+    eligible_top_candidate_ids: eligibleTopCandidateIds,
+    low_confidence_candidate_ids: lowConfidenceCandidateIds,
+    baseline_strategy_types: baselineStrategyTypes,
+    crr_hybrid_policy: {
+      status: crrStatus,
+      mode: crrHybridDiagnostics?.mode ?? null,
+      action_counts: crrHybridDiagnostics?.summary?.by_action ?? null,
+      interpretation: crrStatus === 'AVAILABLE'
+        ? 'EVIDENCE_ONLY_NO_RANKING_OR_RECOMMENDATION_EFFECT'
+        : 'NOT_PART_OF_THIS_DECISION',
+    },
+    required_mentions: requiredMentions,
+    forbidden_claims: forbiddenClaims,
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Phase 2D.2 — guarded CRR hybrid diagnostics
@@ -515,6 +578,14 @@ export async function analyzeDirectional(req, deps = {}) {
     }))
     : [];
 
+  const agentResponseGuidance = buildAgentResponseGuidance({
+    rankingResult,
+    topCandidates,
+    nearMissCandidates,
+    baselines: rankingResult.baselines,
+    crrHybridDiagnostics,
+  });
+
   // Step 18 — scenario/confidence quality summary across the full ranked universe.
   const scenarioQualitySummary = { HIGH: 0, MEDIUM: 0, LOW: 0 };
   for (const c of rankingResult.ranked_candidates) {
@@ -607,6 +678,7 @@ export async function analyzeDirectional(req, deps = {}) {
 
     top_candidates: topCandidates,
     near_miss_candidates: nearMissCandidates,
+    agent_response_guidance: agentResponseGuidance,
 
     baselines: rankingResult.baselines.map(b => ({
       candidate_id: b.candidate_id,
