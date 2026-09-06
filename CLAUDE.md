@@ -45,6 +45,7 @@ without touching the chart.
 - `data_get_financials` → revenue, net income, EPS, EBITDA, FCF, margins; `period: "annual"|"quarterly"`
 - `data_get_seasonals` → average return + win rate per calendar month (chart symbol only)
 - `data_get_news` → recent headlines with source, date, link
+- `data_get_batch_news` → combined, deduplicated news for MANY symbols in one request (same feed Watchlist Advanced View → News uses). Symbols are auto-sorted/deduped (the service 400s on unsorted input). Call once per market — mixing US with a lower-volume market like BIST can crowd the smaller one out of the capped response.
 - `data_get_options` → ATM implied-volatility term structure per expiry
 - `data_get_etf_profile` / `data_get_bond_info` → fund and bond specifics; error clearly on the wrong instrument type
 

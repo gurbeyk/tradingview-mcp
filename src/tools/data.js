@@ -135,6 +135,14 @@ export function registerDataTools(server) {
     catch (err) { return jsonResult({ success: false, error: err.message }, true); }
   });
 
+  server.tool('data_get_batch_news', 'Combined, deduplicated news for MANY symbols in one TradingView request (the same batch feed Watchlist Advanced View -> News uses). Symbols are deduped and sorted automatically (the service rejects unsorted input). Mixing markets of very different news volume (e.g. US mega-caps with BIST names) can silently crowd the quieter market out of the capped response -- call once per market instead.', {
+    symbols: z.array(z.string()).min(1).max(200).describe('Exchange-qualified symbols, e.g. ["NASDAQ:NVDA", "NASDAQ:MRVL"]. Keep to one market per call.'),
+    limit: z.coerce.number().optional().describe('Max headlines to return (default 50, max 100)'),
+  }, async ({ symbols, limit }) => {
+    try { return jsonResult(await core.getBatchNews({ symbols, limit })); }
+    catch (err) { return jsonResult({ success: false, error: err.message }, true); }
+  });
+
   server.tool('data_get_options', 'Options ATM implied-volatility term structure: per expiry, the ATM strike and ATM IV %. Only available for optionable US equities and ETFs.', {
     symbol: z.string().optional().describe('Exchange-qualified symbol. Omit for the current chart symbol.'),
     max_expirations: z.coerce.number().optional().describe('How many expiries to return, nearest first (default 10, max 30)'),

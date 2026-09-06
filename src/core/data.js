@@ -1039,6 +1039,65 @@ export async function getNews({ symbol, limit } = {}) {
   return { success: true, symbol: sym.pro_name, count: items.length, headlines: items };
 }
 
+const MAX_BATCH_SYMBOLS = 200;
+
+// news-mediator rejects the symbol filter unless its values are byte-sorted —
+// unsorted input returns HTTP 400 "filter values must be sorted" (found via
+// live probing, not documented). Dedup + sort here so callers never hit it.
+export function normalizeBatchSymbols(symbols) {
+  const cleaned = (symbols || [])
+    .map(s => (s == null ? '' : String(s).trim().toUpperCase()))
+    .filter(Boolean);
+  return [...new Set(cleaned)].sort();
+}
+
+/**
+ * Batched news for many symbols in one TradingView request (news-mediator's
+ * news-flow endpoint, the same one Watchlist Advanced View → News uses).
+ * Mixing markets of very different news volume (e.g. US mega-caps with BIST
+ * names) can silently crowd the quieter market out of the capped response —
+ * callers should batch same-market symbol sets separately.
+ */
+export async function getBatchNews({ symbols, limit } = {}) {
+  const symbolList = normalizeBatchSymbols(symbols);
+  if (!symbolList.length) throw new Error('getBatchNews requires at least one symbol.');
+  if (symbolList.length > MAX_BATCH_SYMBOLS) {
+    throw new Error(`getBatchNews accepts at most ${MAX_BATCH_SYMBOLS} symbols per request (got ${symbolList.length}).`);
+  }
+  const max = Math.min(Number(limit) || 50, 100);
+
+  const data = await evaluateAsync(`
+    (async function() {
+      try {
+        var params = new URLSearchParams();
+        params.append('filter', 'lang:en');
+        params.append('filter', 'symbol:' + ${safeString(symbolList.join(','))});
+        params.append('client', 'watchlist');
+        params.append('streaming', 'false');
+        params.append('user_prostatus', 'non_pro');
+        var url = 'https://news-mediator.tradingview.com/public/news-flow/v2/news?' + params.toString();
+        var r = await fetch(url, { credentials: 'include' });
+        if (!r.ok) return { __error: 'news-flow service returned HTTP ' + r.status };
+        var j = await r.json();
+        return { items: (j && j.items) || [] };
+      } catch (e) { return { __error: String((e && e.message) || e) }; }
+    })()
+  `);
+  if (!data) throw new Error('No response from TradingView news-flow service.');
+  if (data.__error) throw new Error(`TradingView batch news request failed: ${data.__error}`);
+
+  const items = (data.items || []).slice(0, max).map(it => ({
+    title: it.title ?? null,
+    source: it.source ?? (it.provider && it.provider.name) ?? null,
+    published_at: isoDate(it.published),
+    breaking: it.urgency === 1,
+    link: it.link || (it.storyPath ? `https://www.tradingview.com${it.storyPath}` : null),
+    related_symbols: Array.isArray(it.relatedSymbols) ? it.relatedSymbols.map(s => s.symbol).filter(Boolean) : [],
+  }));
+
+  return { success: true, symbols_requested: symbolList, count: items.length, headlines: items };
+}
+
 export async function getOptions({ symbol, max_expirations } = {}) {
   const sym = await resolveSymbol(symbol);
   const maxExp = Math.min(Number(max_expirations) || 10, 30);
