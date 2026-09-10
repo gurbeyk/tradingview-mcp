@@ -187,6 +187,15 @@ checklist for the packet. It is not a second model and does not change any
 candidate result; it only summarizes which source fields control the user-facing
 explanation, which caveats must be surfaced, and which claims remain forbidden.
 
+When present, `user_explanation_summary` is a compact, deterministic,
+already-safe summary of the same packet (`decision_state`, headline,
+eligible/near-miss/LOW-confidence counts, CRR evidence-only status,
+assumption/safety notes) — it may be shown to the user directly or used as
+the basis for a reply. It is **not** a second AI narrative, and it does not
+loosen any rule in this section: the `ai_contract`/`agent_response_guidance`
+safety rules above remain fully binding regardless of what
+`user_explanation_summary` contains.
+
 ### Score / confidence / eligibility language
 - Score and grade are a **comparative heuristic under the supplied scenarios**, not
   a probability, win rate, or expected return. Never turn "score 77" into "77%

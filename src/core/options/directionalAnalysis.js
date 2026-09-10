@@ -224,6 +224,7 @@ function buildFieldProvenance(scenarioSources) {
       'entry_debit', 'capital_required', 'max_loss', 'max_profit', 'breakeven', 'reward_risk_ratio',
       'scenario_pnl', 'scenario_return_on_risk_pct', 'estimated_value', 'score', 'grade', 'confidence',
       'component_scores', 'analysis_snapshot_id', 'diagnostics.crr_hybrid_policy', 'agent_response_guidance',
+      'user_explanation_summary',
     ],
     USER_INPUT: [
       'symbol', 'direction', 'horizon_days', 'max_loss (constraint)', 'base_target_price',
@@ -328,6 +329,88 @@ function buildAgentResponseGuidance({ rankingResult, topCandidates, nearMissCand
     },
     required_mentions: requiredMentions,
     forbidden_claims: forbiddenClaims,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Phase 3B — deterministic, end-user-facing compact summary. Distinct from
+// agent_response_guidance (a checklist for the EXPLAINING agent): this is the
+// compact "what did the engine say?" block meant to be shown/rendered
+// directly. No AI/LLM narrative — every field is derived from packet values
+// already computed above. Never widens agent_response_guidance's contract.
+// ---------------------------------------------------------------------------
+
+const USER_SUMMARY_VERSION = 'OPTIONS_ANALYSIS_USER_SUMMARY_V1';
+
+function buildUserExplanationSummary({
+  req, currentSpot, scenarioTargets, ivShocks, rankingResult, nearMissCandidates,
+  baselines, crrHybridDiagnostics, agentResponseGuidance,
+}) {
+  const isTradeAvailable = rankingResult.decision_state === 'TRADE_CANDIDATES_AVAILABLE';
+  const eligibleCount = agentResponseGuidance.eligible_top_candidate_ids.length;
+  const lowConfidenceCount = agentResponseGuidance.low_confidence_candidate_ids.length;
+  const topEligibleCandidateId = isTradeAvailable ? rankingResult.top_trade_candidate_id : null;
+
+  const crrRequested = req.include_crr_hybrid_diagnostics === true;
+  const crrStatus = crrHybridDiagnostics?.status ?? 'NOT_REQUESTED';
+  // Only three interpretation values are allowed by contract — never a fourth.
+  const crrInterpretation = !crrRequested
+    ? 'NOT_REQUESTED'
+    : (crrStatus === 'AVAILABLE' ? 'EVIDENCE_ONLY_NO_RANKING_EFFECT' : 'UNAVAILABLE');
+
+  const assumptionNotes = [
+    'The user-supplied base target price is a scenario assumption, not an engine forecast.',
+  ];
+  if (ivShocks.warningNeeded) {
+    assumptionNotes.push('No IV scenario was specified — IV unchanged analysis assumption was used.');
+  }
+
+  const safetyNotes = [
+    'Score is a comparative heuristic under the supplied scenarios, not a probability or expected return.',
+    'Delta is a Greek, not a probability of profit.',
+  ];
+  if (!isTradeAvailable) {
+    safetyNotes.push('No candidate passed the consideration gates — NO_TRADE is preserved; near-miss candidates are explanatory only and were not promoted.');
+  }
+  if (lowConfidenceCount > 0) {
+    safetyNotes.push(`${lowConfidenceCount} candidate(s) are LOW confidence and must be explicitly labeled as such if mentioned.`);
+  }
+  if (crrStatus === 'AVAILABLE') {
+    safetyNotes.push('CRR hybrid diagnostics are evidence-only and ranking-isolated — never a recommendation or score override.');
+  }
+
+  const headline = isTradeAvailable
+    ? `${eligibleCount} eligible candidate(s) found; top candidate is ${topEligibleCandidateId}.`
+    : 'No candidate passed the consideration gates — NO_TRADE is the only eligible baseline.';
+
+  return {
+    version: USER_SUMMARY_VERSION,
+    decision_state: rankingResult.decision_state,
+    headline_status: isTradeAvailable ? 'ELIGIBLE_CANDIDATES_AVAILABLE' : 'NO_ELIGIBLE_OPTIONS',
+    headline,
+    thesis_assumption: {
+      direction: req.direction,
+      horizon_days: req.horizon_days,
+      base_target_price: req.base_target_price,
+      current_underlying_price: currentSpot,
+      expected_move_pct: round2((scenarioTargets.expectedMove / currentSpot) * 100),
+    },
+    eligible_candidate_count: eligibleCount,
+    top_eligible_candidate_id: topEligibleCandidateId,
+    near_miss_count: nearMissCandidates.length,
+    low_confidence_candidate_count: lowConfidenceCount,
+    baseline_summary: {
+      has_buy_stock: baselines.some(b => b.strategy_type === 'BUY_STOCK'),
+      has_no_trade: baselines.some(b => b.strategy_type === 'NO_TRADE'),
+      eligible_baseline_types: baselines.filter(b => b.consideration_eligible).map(b => b.strategy_type),
+    },
+    crr_summary: {
+      requested: crrRequested,
+      status: crrStatus,
+      interpretation: crrInterpretation,
+    },
+    assumption_notes: assumptionNotes,
+    safety_notes: safetyNotes,
   };
 }
 
@@ -586,6 +669,18 @@ export async function analyzeDirectional(req, deps = {}) {
     crrHybridDiagnostics,
   });
 
+  const userExplanationSummary = buildUserExplanationSummary({
+    req,
+    currentSpot,
+    scenarioTargets,
+    ivShocks,
+    rankingResult,
+    nearMissCandidates,
+    baselines: rankingResult.baselines,
+    crrHybridDiagnostics,
+    agentResponseGuidance,
+  });
+
   // Step 18 — scenario/confidence quality summary across the full ranked universe.
   const scenarioQualitySummary = { HIGH: 0, MEDIUM: 0, LOW: 0 };
   for (const c of rankingResult.ranked_candidates) {
@@ -679,6 +774,7 @@ export async function analyzeDirectional(req, deps = {}) {
     top_candidates: topCandidates,
     near_miss_candidates: nearMissCandidates,
     agent_response_guidance: agentResponseGuidance,
+    user_explanation_summary: userExplanationSummary,
 
     baselines: rankingResult.baselines.map(b => ({
       candidate_id: b.candidate_id,
