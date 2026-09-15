@@ -36,6 +36,10 @@ export function registerOptionsAnalysisTools(server) {
 
       max_ranked_results: z.coerce.number().optional().describe('Max candidates returned in top_candidates (default 10, hard maximum 25).'),
       include_crr_hybrid_diagnostics: z.coerce.boolean().optional().describe('Diagnostic-only Phase 2D flag. When true and a CRR-shadow market-input provider is configured, includes crr_hybrid_policy evidence. Never changes ranking, eligibility, scoring, or recommendations.'),
+
+      include_formatted_response: z.coerce.boolean().optional().describe('Phase 3E opt-in flag. When true, adds result.formatted_response — a deterministic, non-AI, locale-formatted rendering of this same packet (see formatOptionsAnalysisForUser). Never changes ranking, scoring, eligibility, or CRR diagnostics; default false, and the field is omitted entirely when false.'),
+      formatted_response_locale: z.enum(['tr', 'en']).optional().describe('Locale for formatted_response when include_formatted_response is true (default "tr").'),
+      formatted_response_max_candidates: z.coerce.number().optional().describe('Max candidates rendered per section in formatted_response when include_formatted_response is true (default 3).'),
     },
     async (req) => {
       try { return jsonResult(await analyzeDirectional(req)); }

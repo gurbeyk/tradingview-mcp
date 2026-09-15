@@ -20,6 +20,7 @@ import { rankStrategyCandidates as _rankStrategyCandidates } from './strategyRan
 import { generateCandidateScenarioResultsCrrShadow as _generateCandidateScenarioResultsCrrShadow } from './marketInputs/crrShadowScenario.js';
 import { evaluateHybridCrrPolicy as _evaluateHybridCrrPolicy } from './marketInputs/hybridCrrPolicy.js';
 import { buildTradingViewCrrShadowMarketInputs as _buildCrrShadowMarketInputs } from './marketInputs/tradingViewCrrShadowMarketInputs.js';
+import { formatOptionsAnalysisForUser as _formatOptionsAnalysisForUser } from './optionsAnalysisFormatter.js';
 
 const round2 = (v) => (v == null || !Number.isFinite(v) ? null : Math.round(v * 100) / 100);
 
@@ -27,6 +28,8 @@ const DEFAULT_MAX_RANKED_RESULTS = 10;
 const HARD_MAX_RANKED_RESULTS = 25;
 const NEAR_MISS_LIMIT = 5;
 const DEFAULT_MAX_DTE_PADDING = 45;
+const DEFAULT_FORMATTED_RESPONSE_LOCALE = 'tr';
+const DEFAULT_FORMATTED_RESPONSE_MAX_CANDIDATES = 3;
 
 // ---------------------------------------------------------------------------
 // Step 2/5/6 — input validation
@@ -76,6 +79,27 @@ function resolveMaxRankedResults(value) {
   if (!Number.isFinite(n) || n < 1) throw new Error(`Invalid max_ranked_results "${value}". Must be a positive integer.`);
   if (n > HARD_MAX_RANKED_RESULTS) throw new Error(`max_ranked_results ${n} exceeds the hard maximum of ${HARD_MAX_RANKED_RESULTS}.`);
   return n;
+}
+
+// ---------------------------------------------------------------------------
+// Phase 3E — optional deterministic formatted_response (never AI, never
+// changes ranking/scoring/eligibility/CRR contract; a pure Phase 3D render
+// of the packet this function already returns). Off by default so the
+// packet's default shape is unchanged for existing callers.
+// ---------------------------------------------------------------------------
+
+function resolveFormattedResponseOptions(req) {
+  const include = req.include_formatted_response === true;
+  const locale = req.formatted_response_locale ?? DEFAULT_FORMATTED_RESPONSE_LOCALE;
+  if (locale !== 'tr' && locale !== 'en') {
+    throw new Error(`Invalid formatted_response_locale "${locale}". Must be "tr" or "en".`);
+  }
+  const maxCandidatesRaw = req.formatted_response_max_candidates;
+  const maxCandidates = maxCandidatesRaw ?? DEFAULT_FORMATTED_RESPONSE_MAX_CANDIDATES;
+  if (!Number.isFinite(maxCandidates) || maxCandidates < 1) {
+    throw new Error(`Invalid formatted_response_max_candidates "${maxCandidatesRaw}". Must be a positive integer.`);
+  }
+  return { include, locale, maxCandidates };
 }
 
 // ---------------------------------------------------------------------------
@@ -536,6 +560,7 @@ export async function analyzeDirectional(req, deps = {}) {
   const rankStrategyCandidates = deps.rankStrategyCandidates ?? _rankStrategyCandidates;
 
   validateRequiredInputs(req);
+  const formattedResponseOptions = resolveFormattedResponseOptions(req);
 
   const executionModel = req.execution_model ?? 'conservative';
   const contractMultiplier = req.contract_multiplier ?? 100;
@@ -690,7 +715,7 @@ export async function analyzeDirectional(req, deps = {}) {
   const warnings = [...chainResp.warnings];
   if (ivShocks.warningNeeded) warnings.push('IV_SCENARIO_NOT_SPECIFIED');
 
-  return {
+  const result = {
     analysis_type: 'DIRECTIONAL_OPTIONS',
     analysis_snapshot_id: snapshotId,
     analysis_as_of_utc: analysisAsOfUtc,
@@ -723,6 +748,9 @@ export async function analyzeDirectional(req, deps = {}) {
       min_dte: req.min_dte ?? null,
       max_dte: req.max_dte ?? null,
       include_crr_hybrid_diagnostics: req.include_crr_hybrid_diagnostics ?? false,
+      include_formatted_response: formattedResponseOptions.include,
+      formatted_response_locale: formattedResponseOptions.locale,
+      formatted_response_max_candidates: formattedResponseOptions.maxCandidates,
       execution_model: executionModel,
       commission_per_contract: commissionPerContract,
       contract_multiplier: contractMultiplier,
@@ -804,4 +832,19 @@ export async function analyzeDirectional(req, deps = {}) {
 
     limitations: KNOWN_LIMITATIONS,
   };
+
+  // Phase 3E — optional, opt-in only. Purely a Phase 3D render of the packet
+  // above (formatOptionsAnalysisForUser never recalculates anything), so it
+  // cannot change ranking/scoring/eligibility/CRR diagnostics. Omitted
+  // entirely (not null) when not requested, so the default packet shape is
+  // unchanged for existing callers.
+  if (formattedResponseOptions.include) {
+    const formatOptionsAnalysisForUser = deps.formatOptionsAnalysisForUser ?? _formatOptionsAnalysisForUser;
+    result.formatted_response = formatOptionsAnalysisForUser(result, {
+      locale: formattedResponseOptions.locale,
+      maxCandidates: formattedResponseOptions.maxCandidates,
+    });
+  }
+
+  return result;
 }

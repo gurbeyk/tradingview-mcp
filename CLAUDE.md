@@ -205,6 +205,15 @@ sections, no new numbers, `allowed_candidate_ids`-gated). It does not loosen
 or replace `ai_contract`/`agent_response_guidance`, which remain the
 binding safety rules regardless of whether the formatter is used.
 
+If the user wants a directly readable explanation instead of raw packet
+fields, `options_analyze_directional` can be called with
+`include_formatted_response: true` (optionally `formatted_response_locale`
+and `formatted_response_max_candidates`) to get `result.formatted_response`
+pre-rendered — see `docs/phase-3e-optional-formatted-response.md`. This is
+opt-in only, default `false`, and still not investment advice:
+`ai_contract`/`agent_response_guidance` remain binding regardless of whether
+`formatted_response` was requested.
+
 ### Score / confidence / eligibility language
 - Score and grade are a **comparative heuristic under the supplied scenarios**, not
   a probability, win rate, or expected return. Never turn "score 77" into "77%

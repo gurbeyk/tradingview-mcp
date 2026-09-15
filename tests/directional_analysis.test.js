@@ -607,3 +607,85 @@ describe('Phase 3B — user_explanation_summary', () => {
     assert.equal(t.expected_move_pct, result.thesis.expected_move_pct);
   });
 });
+
+describe('Phase 3E — optional formatted_response', () => {
+  it('1) is absent by default (backward compatible)', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    assert.ok(!('formatted_response' in result), 'formatted_response must not be present when not requested');
+  });
+
+  it('2) is present when include_formatted_response is true', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_formatted_response: true }, mockDeps());
+    assert.ok(result.formatted_response, 'formatted_response must be present when requested');
+  });
+
+  it('3) has version OPTIONS_ANALYSIS_FORMATTED_RESPONSE_V1', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_formatted_response: true }, mockDeps());
+    assert.equal(result.formatted_response.version, 'OPTIONS_ANALYSIS_FORMATTED_RESPONSE_V1');
+  });
+
+  it('4) defaults formatted_response_locale to "tr"', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_formatted_response: true }, mockDeps());
+    assert.equal(result.formatted_response.locale, 'tr');
+    assert.equal(result.input_echo.formatted_response_locale, 'tr');
+  });
+
+  it('5) honors formatted_response_locale: "en"', async () => {
+    const result = await analyzeDirectional(
+      { ...BULLISH_BASE, include_formatted_response: true, formatted_response_locale: 'en' },
+      mockDeps(),
+    );
+    assert.equal(result.formatted_response.locale, 'en');
+  });
+
+  it('6) formatted_response_max_candidates caps rendered candidates', async () => {
+    const result = await analyzeDirectional(
+      { ...BULLISH_BASE, include_formatted_response: true, formatted_response_max_candidates: 1 },
+      mockDeps(),
+    );
+    assert.equal(result.input_echo.formatted_response_max_candidates, 1);
+    const eligibleSection = result.formatted_response.sections.find(s => s.id === 'eligible_candidates');
+    assert.ok(eligibleSection);
+    assert.ok(eligibleSection.lines.length <= 1);
+  });
+
+  it('7) rejects an invalid formatted_response_locale with a clear error', async () => {
+    await assert.rejects(
+      () => analyzeDirectional({ ...BULLISH_BASE, include_formatted_response: true, formatted_response_locale: 'de' }, mockDeps()),
+      /Invalid formatted_response_locale/,
+    );
+  });
+
+  it('8) rejects an invalid formatted_response_max_candidates with a clear error', async () => {
+    await assert.rejects(
+      () => analyzeDirectional({ ...BULLISH_BASE, include_formatted_response: true, formatted_response_max_candidates: 0 }, mockDeps()),
+      /Invalid formatted_response_max_candidates/,
+    );
+    await assert.rejects(
+      () => analyzeDirectional({ ...BULLISH_BASE, include_formatted_response: true, formatted_response_max_candidates: -1 }, mockDeps()),
+      /Invalid formatted_response_max_candidates/,
+    );
+  });
+
+  it('9) adding formatted_response does not change ranking/top_candidates/diagnostics.crr_hybrid_policy', async () => {
+    const base = await analyzeDirectional({ ...BULLISH_BASE, include_crr_hybrid_diagnostics: true }, mockDeps({ dividendYieldPct: 0.5 }));
+    const withFormatted = await analyzeDirectional(
+      { ...BULLISH_BASE, include_crr_hybrid_diagnostics: true, include_formatted_response: true },
+      mockDeps({ dividendYieldPct: 0.5 }),
+    );
+    assert.deepEqual(withFormatted.ranking, base.ranking);
+    assert.deepEqual(withFormatted.top_candidates, base.top_candidates);
+    assert.deepEqual(withFormatted.diagnostics.crr_hybrid_policy, base.diagnostics.crr_hybrid_policy);
+  });
+
+  it('10) leaves formatted_response absent (not null) when include_formatted_response is explicitly false', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_formatted_response: false }, mockDeps());
+    assert.ok(!('formatted_response' in result));
+    assert.equal(result.input_echo.include_formatted_response, false);
+  });
+
+  it('formatted_response.safety.numeric_source_of_truth matches ai_contract.numeric_source_of_truth', async () => {
+    const result = await analyzeDirectional({ ...BULLISH_BASE, include_formatted_response: true }, mockDeps());
+    assert.equal(result.formatted_response.safety.numeric_source_of_truth, result.ai_contract.numeric_source_of_truth);
+  });
+});
