@@ -1,0 +1,1650 @@
+{
+  "analysis_type": "DIRECTIONAL_OPTIONS",
+  "analysis_snapshot_id": "359c1175e178862a",
+  "analysis_as_of_utc": "2026-09-15T19:43:01.415Z",
+  "symbol": "NASDAQ:AAPL",
+  "underlying_price": 329.97,
+  "direction": "bullish",
+  "horizon_days": 45,
+  "max_loss": 1000,
+  "thesis": {
+    "base_target_price": 347,
+    "expected_move_absolute": 17.03,
+    "expected_move_pct": 5.16
+  },
+  "input_echo": {
+    "symbol": "NASDAQ:AAPL",
+    "direction": "bullish",
+    "horizon_days": 45,
+    "max_loss": 1000,
+    "base_target_price": 347,
+    "downside_target_price": null,
+    "upside_target_price": null,
+    "downside_iv_change_points": null,
+    "base_iv_change_points": null,
+    "upside_iv_change_points": null,
+    "min_dte": null,
+    "max_dte": null,
+    "include_crr_hybrid_diagnostics": true,
+    "execution_model": "conservative",
+    "commission_per_contract": 0,
+    "contract_multiplier": 100,
+    "max_spread_pct": 15,
+    "max_ranked_results": 10
+  },
+  "scenario_definitions": {
+    "downside": {
+      "scenario_id": "DOWNSIDE",
+      "underlying_price": 321.46,
+      "iv_change_points": 0,
+      "days_forward": 45,
+      "scenario_source": "DETERMINISTIC_HELPER"
+    },
+    "base": {
+      "scenario_id": "BASE",
+      "underlying_price": 347,
+      "iv_change_points": 0,
+      "days_forward": 45,
+      "scenario_source": "USER_EXPLICIT"
+    },
+    "upside": {
+      "scenario_id": "UPSIDE",
+      "underlying_price": 355.52,
+      "iv_change_points": 0,
+      "days_forward": 45,
+      "scenario_source": "DETERMINISTIC_HELPER"
+    }
+  },
+  "data_source": {
+    "provider": "TradingView Options Scanner",
+    "endpoint": "/options/scan2",
+    "options_retrieved_at_utc": "2026-09-15T19:43:01.413Z",
+    "chain_completeness": "COMPLETE",
+    "warnings": [
+      "IV_SCENARIO_NOT_SPECIFIED"
+    ]
+  },
+  "candidate_generation": {
+    "input_contract_count": 284,
+    "eligible_contract_count": 142,
+    "candidate_count": 48,
+    "rejected_count": 138,
+    "rejection_summary": {
+      "WIDE_SPREAD": 27,
+      "DELTA_OUT_OF_RANGE": 101,
+      "MAX_LOSS_EXCEEDED": 10
+    }
+  },
+  "ranking": {
+    "model": "RANKING_MODEL_V1",
+    "disclaimer": "Comparative heuristic score under user-supplied scenarios; not probability or expected return.",
+    "decision_state": "TRADE_CANDIDATES_AVAILABLE",
+    "top_trade_candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C350.0::conservative",
+    "fallback_baseline": "NO_TRADE",
+    "thresholds": {
+      "minimum_score_for_consideration": 60,
+      "minimum_confidence_for_consideration": "MEDIUM",
+      "min_capped_reward_risk": null,
+      "configured_max_spread_pct": 15
+    }
+  },
+  "scenario_quality_summary": {
+    "HIGH_CONFIDENCE_CANDIDATES": 3,
+    "MEDIUM_CONFIDENCE_CANDIDATES": 14,
+    "LOW_CONFIDENCE_CANDIDATES": 30
+  },
+  "diagnostics": {
+    "crr_hybrid_policy": {
+      "status": "AVAILABLE",
+      "mode": "DIAGNOSTIC_ONLY_NO_RANKING_CHANGE",
+      "market_inputs": [
+        {
+          "expiration": "2026-10-30",
+          "days_to_expiry": 45,
+          "mode": "PARTIAL_EXTERNAL_INPUTS",
+          "overall_confidence": "LOW",
+          "discount_rate_source": "TREASURY_BILL_COUPON_EQUIVALENT_NORMALIZED",
+          "dividend_mode": "TRAILING_DIVIDEND_YIELD_APPROXIMATION",
+          "borrow_source": "NOT_CONNECTED",
+          "warnings": [
+            "TREASURY_RATE_FROZEN_FALLBACK_NOT_LIVE",
+            "CONTINUOUS_DIVIDEND_APPROXIMATION",
+            "TRAILING_NOT_FORWARD",
+            "BORROW_DATA_UNAVAILABLE"
+          ]
+        },
+        {
+          "expiration": "2026-11-20",
+          "days_to_expiry": 66,
+          "mode": "PARTIAL_EXTERNAL_INPUTS",
+          "overall_confidence": "LOW",
+          "discount_rate_source": "TREASURY_BILL_COUPON_EQUIVALENT_NORMALIZED",
+          "dividend_mode": "TRAILING_DIVIDEND_YIELD_APPROXIMATION",
+          "borrow_source": "NOT_CONNECTED",
+          "warnings": [
+            "TREASURY_RATE_FROZEN_FALLBACK_NOT_LIVE",
+            "CONTINUOUS_DIVIDEND_APPROXIMATION",
+            "TRAILING_NOT_FORWARD",
+            "BORROW_DATA_UNAVAILABLE"
+          ]
+        }
+      ],
+      "summary": {
+        "total_candidates": 48,
+        "by_action": {
+          "LOCAL_ONLY": 20,
+          "HYBRID_REPRICE_CANDIDATE": 26,
+          "NO_ACTION": 2
+        },
+        "crr_shadow_available_count": 48,
+        "local_warning_count": 26
+      },
+      "candidates": [
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C330.0::OPRA:AAPL261030C345.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "LOCAL_ONLY",
+          "reasons": [
+            "LOCAL_CLEAN_AND_CRR_AGREES"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C345.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "LOCAL_ONLY",
+          "reasons": [
+            "LOCAL_CLEAN_AND_CRR_AGREES"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C350.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "LOCAL_ONLY",
+          "reasons": [
+            "LOCAL_CLEAN_AND_CRR_AGREES"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C340.0::OPRA:AAPL261030C350.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "LOCAL_ONLY",
+          "reasons": [
+            "LOCAL_CLEAN_AND_CRR_AGREES"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C320.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "HYBRID_REPRICE_CANDIDATE",
+          "reasons": [
+            "LOCAL_WARNINGS_MAJOR",
+            "LOCAL_WARNINGS_MODERATE",
+            "MODEL_DISAGREEMENT_MEDIUM"
+          ],
+          "local_warnings": [
+            "LARGE_TIME_STEP",
+            "INTRINSIC_FLOOR_APPLIED"
+          ],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C325.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "HYBRID_REPRICE_CANDIDATE",
+          "reasons": [
+            "LOCAL_WARNINGS_MAJOR",
+            "LOCAL_WARNINGS_MODERATE",
+            "MODEL_DISAGREEMENT_MEDIUM"
+          ],
+          "local_warnings": [
+            "LARGE_TIME_STEP",
+            "INTRINSIC_FLOOR_APPLIED"
+          ],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C330.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "HYBRID_REPRICE_CANDIDATE",
+          "reasons": [
+            "LOCAL_WARNINGS_MAJOR",
+            "LOCAL_WARNINGS_MODERATE",
+            "MODEL_DISAGREEMENT_MEDIUM"
+          ],
+          "local_warnings": [
+            "LARGE_TIME_STEP",
+            "INTRINSIC_FLOOR_APPLIED"
+          ],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C320.0::OPRA:AAPL261120C325.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "HYBRID_REPRICE_CANDIDATE",
+          "reasons": [
+            "LOCAL_WARNINGS_MAJOR",
+            "LOCAL_WARNINGS_MODERATE",
+            "MODEL_DISAGREEMENT_MEDIUM"
+          ],
+          "local_warnings": [
+            "LARGE_TIME_STEP",
+            "INTRINSIC_FLOOR_APPLIED"
+          ],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C320.0::OPRA:AAPL261120C330.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "HYBRID_REPRICE_CANDIDATE",
+          "reasons": [
+            "LOCAL_WARNINGS_MAJOR",
+            "LOCAL_WARNINGS_MODERATE",
+            "MODEL_DISAGREEMENT_MEDIUM"
+          ],
+          "local_warnings": [
+            "LARGE_TIME_STEP",
+            "INTRINSIC_FLOOR_APPLIED"
+          ],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_MEDIUM",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BUY_STOCK::NASDAQ:AAPL::329.97::conservative",
+          "strategy_type": "BUY_STOCK",
+          "action": "NO_ACTION",
+          "reasons": [
+            "NON_OPTION_BASELINE"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": null,
+          "crr_shadow_available": true
+        }
+      ]
+    }
+  },
+  "top_candidates": [
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C350.0::conservative",
+      "rank": 1,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-10-30",
+      "days_to_expiry": 45,
+      "legs": [
+        {
+          "contract": "OPRA:AAPL261030C335.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 335,
+          "fill_price": 11.5,
+          "bid": 11,
+          "ask": 11.5,
+          "spread_pct": 4.44,
+          "iv": 29.12,
+          "delta": 0.46521965732075254,
+          "gamma": 0.011782303144106197,
+          "theta": -0.15279226536598126,
+          "vega": 0.46041831017528884
+        },
+        {
+          "contract": "OPRA:AAPL261030C350.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 350,
+          "fill_price": 5.65,
+          "bid": 5.65,
+          "ask": 5.8,
+          "spread_pct": 2.62,
+          "iv": 27.75,
+          "delta": 0.2925085108773998,
+          "gamma": 0.01069210397635059,
+          "theta": -0.12519421653942195,
+          "vega": 0.3981578547034366
+        }
+      ],
+      "entry_debit": 585,
+      "capital_required": 585,
+      "max_loss": 585,
+      "max_profit": 915,
+      "max_profit_type": "DEFINED",
+      "breakeven": 340.85,
+      "reward_risk_ratio": 1.56,
+      "reward_risk_type": "DEFINED",
+      "score": 63.06,
+      "grade": "C",
+      "confidence": "HIGH",
+      "confidence_reasons": [],
+      "consideration_eligible": true,
+      "consideration_reasons": [],
+      "component_scores": {
+        "base": 100,
+        "downside": 0,
+        "upside": 78.21,
+        "breakeven": 59.32,
+        "execution": 70.4
+      },
+      "raw_metrics": {
+        "downside_pnl": -585,
+        "base_pnl": 615,
+        "upside_pnl": 915,
+        "downside_return_on_risk_pct": -100,
+        "base_return_on_risk_pct": 105.13,
+        "upside_return_on_risk_pct": 156.41,
+        "max_loss": 585,
+        "capital_required": 585,
+        "breakeven": 340.85,
+        "reward_risk_ratio": 1.56,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 1.56,
+        "breakeven_margin_pct": 1.86,
+        "max_leg_spread_pct": 4.44
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 321.46,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -585,
+          "scenario_return_on_risk_pct": -100,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 347,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 615,
+          "scenario_return_on_risk_pct": 105.13,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 355.52,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 915,
+          "scenario_return_on_risk_pct": 156.41,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C340.0::OPRA:AAPL261030C350.0::conservative",
+      "rank": 2,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-10-30",
+      "days_to_expiry": 45,
+      "legs": [
+        {
+          "contract": "OPRA:AAPL261030C340.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 340,
+          "fill_price": 9.25,
+          "bid": 8.7,
+          "ask": 9.25,
+          "spread_pct": 6.13,
+          "iv": 28.62,
+          "delta": 0.40596735233433195,
+          "gamma": 0.01169530403768383,
+          "theta": -0.1462528808214727,
+          "vega": 0.4492771023685031
+        },
+        {
+          "contract": "OPRA:AAPL261030C350.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 350,
+          "fill_price": 5.65,
+          "bid": 5.65,
+          "ask": 5.8,
+          "spread_pct": 2.62,
+          "iv": 27.75,
+          "delta": 0.2925085108773998,
+          "gamma": 0.01069210397635059,
+          "theta": -0.12519421653942195,
+          "vega": 0.3981578547034366
+        }
+      ],
+      "entry_debit": 360,
+      "capital_required": 360,
+      "max_loss": 360,
+      "max_profit": 640,
+      "max_profit_type": "DEFINED",
+      "breakeven": 343.6,
+      "reward_risk_ratio": 1.78,
+      "reward_risk_type": "DEFINED",
+      "score": 63.03,
+      "grade": "C",
+      "confidence": "MEDIUM",
+      "confidence_reasons": [
+        "max_leg_spread_pct=6.13"
+      ],
+      "consideration_eligible": true,
+      "consideration_reasons": [],
+      "component_scores": {
+        "base": 97.22,
+        "downside": 0,
+        "upside": 88.89,
+        "breakeven": 55.15,
+        "execution": 59.13
+      },
+      "raw_metrics": {
+        "downside_pnl": -360,
+        "base_pnl": 340,
+        "upside_pnl": 640,
+        "downside_return_on_risk_pct": -100,
+        "base_return_on_risk_pct": 94.44,
+        "upside_return_on_risk_pct": 177.78,
+        "max_loss": 360,
+        "capital_required": 360,
+        "breakeven": 343.6,
+        "reward_risk_ratio": 1.78,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 1.78,
+        "breakeven_margin_pct": 1.03,
+        "max_leg_spread_pct": 6.13
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 321.46,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -360,
+          "scenario_return_on_risk_pct": -100,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 347,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 340,
+          "scenario_return_on_risk_pct": 94.44,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 355.52,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 640,
+          "scenario_return_on_risk_pct": 177.78,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C325.0::conservative",
+      "rank": 3,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:AAPL261120C315.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 315,
+          "fill_price": 25.7,
+          "bid": 25,
+          "ask": 25.7,
+          "spread_pct": 2.76,
+          "iv": 26.98,
+          "delta": 0.6839982568745291,
+          "gamma": 0.00939240756645369,
+          "theta": -0.10750970461332007,
+          "vega": 0.49939414831337176
+        },
+        {
+          "contract": "OPRA:AAPL261120C325.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 325,
+          "fill_price": 18.9,
+          "bid": 18.9,
+          "ask": 19.2,
+          "spread_pct": 1.57,
+          "iv": 26.01,
+          "delta": 0.5832012096955237,
+          "gamma": 0.010688665938764292,
+          "theta": -0.11264073123142437,
+          "vega": 0.5478511534948232
+        }
+      ],
+      "entry_debit": 680,
+      "capital_required": 680,
+      "max_loss": 680,
+      "max_profit": 320,
+      "max_profit_type": "DEFINED",
+      "breakeven": 321.8,
+      "reward_risk_ratio": 0.47,
+      "reward_risk_type": "DEFINED",
+      "score": 64.06,
+      "grade": "C",
+      "confidence": "LOW",
+      "confidence_reasons": [
+        "LARGE_TIME_STEP (downside)",
+        "LARGE_TIME_STEP (base)",
+        "INTRINSIC_FLOOR_APPLIED (upside)",
+        "LARGE_TIME_STEP (upside)"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "CONFIDENCE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 60.37,
+        "downside": 84.85,
+        "upside": 22.06,
+        "breakeven": 88.19,
+        "execution": 81.6
+      },
+      "raw_metrics": {
+        "downside_pnl": -103,
+        "base_pnl": 141,
+        "upside_pnl": 300,
+        "downside_return_on_risk_pct": -15.15,
+        "base_return_on_risk_pct": 20.74,
+        "upside_return_on_risk_pct": 44.12,
+        "max_loss": 680,
+        "capital_required": 680,
+        "breakeven": 321.8,
+        "reward_risk_ratio": 0.47,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 2.91,
+        "breakeven_margin_pct": 7.64,
+        "max_leg_spread_pct": 2.76
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 321.46,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -103,
+          "scenario_return_on_risk_pct": -15.15,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP"
+          ]
+        },
+        "base": {
+          "underlying_price": 347,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 141,
+          "scenario_return_on_risk_pct": 20.74,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP"
+          ]
+        },
+        "upside": {
+          "underlying_price": 355.52,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 300,
+          "scenario_return_on_risk_pct": 44.12,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "INTRINSIC_FLOOR_APPLIED",
+            "LARGE_TIME_STEP"
+          ]
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C330.0::conservative",
+      "rank": 4,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:AAPL261120C315.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 315,
+          "fill_price": 25.7,
+          "bid": 25,
+          "ask": 25.7,
+          "spread_pct": 2.76,
+          "iv": 26.98,
+          "delta": 0.6839982568745291,
+          "gamma": 0.00939240756645369,
+          "theta": -0.10750970461332007,
+          "vega": 0.49939414831337176
+        },
+        {
+          "contract": "OPRA:AAPL261120C330.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 330,
+          "fill_price": 16.05,
+          "bid": 16.05,
+          "ask": 16.4,
+          "spread_pct": 2.16,
+          "iv": 25.53,
+          "delta": 0.5284544206927155,
+          "gamma": 0.01110215695589886,
+          "theta": -0.1123402521852734,
+          "vega": 0.5586507881741815
+        }
+      ],
+      "entry_debit": 965,
+      "capital_required": 965,
+      "max_loss": 965,
+      "max_profit": 535,
+      "max_profit_type": "DEFINED",
+      "breakeven": 324.65,
+      "reward_risk_ratio": 0.55,
+      "reward_risk_type": "DEFINED",
+      "score": 63.47,
+      "grade": "C",
+      "confidence": "LOW",
+      "confidence_reasons": [
+        "LARGE_TIME_STEP (downside)",
+        "LARGE_TIME_STEP (base)",
+        "INTRINSIC_FLOOR_APPLIED (upside)",
+        "LARGE_TIME_STEP (upside)"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "CONFIDENCE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 61.51,
+        "downside": 83.73,
+        "upside": 21.76,
+        "breakeven": 83.87,
+        "execution": 81.6
+      },
+      "raw_metrics": {
+        "downside_pnl": -157,
+        "base_pnl": 222,
+        "upside_pnl": 420,
+        "downside_return_on_risk_pct": -16.27,
+        "base_return_on_risk_pct": 23.01,
+        "upside_return_on_risk_pct": 43.52,
+        "max_loss": 965,
+        "capital_required": 965,
+        "breakeven": 324.65,
+        "reward_risk_ratio": 0.55,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 2.68,
+        "breakeven_margin_pct": 6.77,
+        "max_leg_spread_pct": 2.76
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 321.46,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -157,
+          "scenario_return_on_risk_pct": -16.27,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP"
+          ]
+        },
+        "base": {
+          "underlying_price": 347,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 222,
+          "scenario_return_on_risk_pct": 23.01,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP"
+          ]
+        },
+        "upside": {
+          "underlying_price": 355.52,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 420,
+          "scenario_return_on_risk_pct": 43.52,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "INTRINSIC_FLOOR_APPLIED",
+            "LARGE_TIME_STEP"
+          ]
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C320.0::OPRA:AAPL261120C330.0::conservative",
+      "rank": 5,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:AAPL261120C320.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 320,
+          "fill_price": 22.3,
+          "bid": 21.9,
+          "ask": 22.3,
+          "spread_pct": 1.81,
+          "iv": 26.49,
+          "delta": 0.6352865818284136,
+          "gamma": 0.010105121006867479,
+          "theta": -0.11095942363651358,
+          "vega": 0.5275550489875243
+        },
+        {
+          "contract": "OPRA:AAPL261120C330.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 330,
+          "fill_price": 16.05,
+          "bid": 16.05,
+          "ask": 16.4,
+          "spread_pct": 2.16,
+          "iv": 25.53,
+          "delta": 0.5284544206927155,
+          "gamma": 0.01110215695589886,
+          "theta": -0.1123402521852734,
+          "vega": 0.5586507881741815
+        }
+      ],
+      "entry_debit": 625,
+      "capital_required": 625,
+      "max_loss": 625,
+      "max_profit": 375,
+      "max_profit_type": "DEFINED",
+      "breakeven": 326.25,
+      "reward_risk_ratio": 0.6,
+      "reward_risk_type": "DEFINED",
+      "score": 62.13,
+      "grade": "C",
+      "confidence": "LOW",
+      "confidence_reasons": [
+        "LARGE_TIME_STEP (downside)",
+        "LARGE_TIME_STEP (base)",
+        "INTRINSIC_FLOOR_APPLIED (upside)",
+        "LARGE_TIME_STEP (upside)"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "CONFIDENCE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 61.12,
+        "downside": 80.32,
+        "upside": 20.8,
+        "breakeven": 81.44,
+        "execution": 85.6
+      },
+      "raw_metrics": {
+        "downside_pnl": -123,
+        "base_pnl": 139,
+        "upside_pnl": 260,
+        "downside_return_on_risk_pct": -19.68,
+        "base_return_on_risk_pct": 22.24,
+        "upside_return_on_risk_pct": 41.6,
+        "max_loss": 625,
+        "capital_required": 625,
+        "breakeven": 326.25,
+        "reward_risk_ratio": 0.6,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 2.11,
+        "breakeven_margin_pct": 6.29,
+        "max_leg_spread_pct": 2.16
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 321.46,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -123,
+          "scenario_return_on_risk_pct": -19.68,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP"
+          ]
+        },
+        "base": {
+          "underlying_price": 347,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 139,
+          "scenario_return_on_risk_pct": 22.24,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP"
+          ]
+        },
+        "upside": {
+          "underlying_price": 355.52,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 260,
+          "scenario_return_on_risk_pct": 41.6,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "INTRINSIC_FLOOR_APPLIED",
+            "LARGE_TIME_STEP"
+          ]
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C320.0::OPRA:AAPL261120C325.0::conservative",
+      "rank": 6,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:AAPL261120C320.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 320,
+          "fill_price": 22.3,
+          "bid": 21.9,
+          "ask": 22.3,
+          "spread_pct": 1.81,
+          "iv": 26.49,
+          "delta": 0.6352865818284136,
+          "gamma": 0.010105121006867479,
+          "theta": -0.11095942363651358,
+          "vega": 0.5275550489875243
+        },
+        {
+          "contract": "OPRA:AAPL261120C325.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 325,
+          "fill_price": 18.9,
+          "bid": 18.9,
+          "ask": 19.2,
+          "spread_pct": 1.57,
+          "iv": 26.01,
+          "delta": 0.5832012096955237,
+          "gamma": 0.010688665938764292,
+          "theta": -0.11264073123142437,
+          "vega": 0.5478511534948232
+        }
+      ],
+      "entry_debit": 340,
+      "capital_required": 340,
+      "max_loss": 340,
+      "max_profit": 160,
+      "max_profit_type": "DEFINED",
+      "breakeven": 323.4,
+      "reward_risk_ratio": 0.47,
+      "reward_risk_type": "DEFINED",
+      "score": 61.79,
+      "grade": "C",
+      "confidence": "LOW",
+      "confidence_reasons": [
+        "LARGE_TIME_STEP (downside)",
+        "LARGE_TIME_STEP (base)",
+        "INTRINSIC_FLOOR_APPLIED (upside)",
+        "LARGE_TIME_STEP (upside)"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "CONFIDENCE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 58.53,
+        "downside": 79.71,
+        "upside": 20.59,
+        "breakeven": 85.76,
+        "execution": 87.93
+      },
+      "raw_metrics": {
+        "downside_pnl": -69,
+        "base_pnl": 58,
+        "upside_pnl": 140,
+        "downside_return_on_risk_pct": -20.29,
+        "base_return_on_risk_pct": 17.06,
+        "upside_return_on_risk_pct": 41.18,
+        "max_loss": 340,
+        "capital_required": 340,
+        "breakeven": 323.4,
+        "reward_risk_ratio": 0.47,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 2.03,
+        "breakeven_margin_pct": 7.15,
+        "max_leg_spread_pct": 1.81
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 321.46,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -69,
+          "scenario_return_on_risk_pct": -20.29,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP"
+          ]
+        },
+        "base": {
+          "underlying_price": 347,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 58,
+          "scenario_return_on_risk_pct": 17.06,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP"
+          ]
+        },
+        "upside": {
+          "underlying_price": 355.52,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 140,
+          "scenario_return_on_risk_pct": 41.18,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "INTRINSIC_FLOOR_APPLIED",
+            "LARGE_TIME_STEP"
+          ]
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C320.0::conservative",
+      "rank": 7,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:AAPL261120C315.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 315,
+          "fill_price": 25.7,
+          "bid": 25,
+          "ask": 25.7,
+          "spread_pct": 2.76,
+          "iv": 26.98,
+          "delta": 0.6839982568745291,
+          "gamma": 0.00939240756645369,
+          "theta": -0.10750970461332007,
+          "vega": 0.49939414831337176
+        },
+        {
+          "contract": "OPRA:AAPL261120C320.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 320,
+          "fill_price": 21.9,
+          "bid": 21.9,
+          "ask": 22.3,
+          "spread_pct": 1.81,
+          "iv": 26.49,
+          "delta": 0.6352865818284136,
+          "gamma": 0.010105121006867479,
+          "theta": -0.11095942363651358,
+          "vega": 0.5275550489875243
+        }
+      ],
+      "entry_debit": 380,
+      "capital_required": 380,
+      "max_loss": 380,
+      "max_profit": 120,
+      "max_profit_type": "DEFINED",
+      "breakeven": 318.8,
+      "reward_risk_ratio": 0.32,
+      "reward_risk_type": "DEFINED",
+      "score": 60.76,
+      "grade": "C",
+      "confidence": "LOW",
+      "confidence_reasons": [
+        "LARGE_TIME_STEP (downside)",
+        "LARGE_TIME_STEP (base)",
+        "INTRINSIC_FLOOR_APPLIED (upside)",
+        "LARGE_TIME_STEP (upside)"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "CONFIDENCE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 55.66,
+        "downside": 80.53,
+        "upside": 15.79,
+        "breakeven": 92.73,
+        "execution": 81.6
+      },
+      "raw_metrics": {
+        "downside_pnl": -74,
+        "base_pnl": 43,
+        "upside_pnl": 120,
+        "downside_return_on_risk_pct": -19.47,
+        "base_return_on_risk_pct": 11.32,
+        "upside_return_on_risk_pct": 31.58,
+        "max_loss": 380,
+        "capital_required": 380,
+        "breakeven": 318.8,
+        "reward_risk_ratio": 0.32,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 1.62,
+        "breakeven_margin_pct": 8.55,
+        "max_leg_spread_pct": 2.76
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 321.46,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -74,
+          "scenario_return_on_risk_pct": -19.47,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP"
+          ]
+        },
+        "base": {
+          "underlying_price": 347,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 43,
+          "scenario_return_on_risk_pct": 11.32,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP"
+          ]
+        },
+        "upside": {
+          "underlying_price": 355.52,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 120,
+          "scenario_return_on_risk_pct": 31.58,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "INTRINSIC_FLOOR_APPLIED",
+            "LARGE_TIME_STEP"
+          ]
+        }
+      }
+    },
+    {
+      "candidate_id": "BUY_STOCK::NASDAQ:AAPL::329.97::conservative",
+      "rank": 8,
+      "strategy_type": "BUY_STOCK",
+      "ranking_class": "UNDERLYING_BASELINE",
+      "expiration": null,
+      "days_to_expiry": null,
+      "legs": [
+        {
+          "role": "long",
+          "action": "BUY",
+          "shares": 3
+        }
+      ],
+      "entry_debit": 989.91,
+      "capital_required": 989.91,
+      "max_loss": 989.91,
+      "max_profit": null,
+      "max_profit_type": "UNLIMITED",
+      "breakeven": 329.97,
+      "reward_risk_ratio": null,
+      "reward_risk_type": "UNDERLYING_BASELINE",
+      "score": 59.9,
+      "grade": "D",
+      "confidence": "HIGH",
+      "confidence_reasons": [],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 52.58,
+        "downside": 97.42,
+        "upside": 3.87,
+        "breakeven": 75.81,
+        "execution": 100
+      },
+      "raw_metrics": {
+        "downside_pnl": -25.53,
+        "base_pnl": 51.09,
+        "upside_pnl": 76.65,
+        "downside_return_on_risk_pct": -2.58,
+        "base_return_on_risk_pct": 5.16,
+        "upside_return_on_risk_pct": 7.74,
+        "max_loss": 989.91,
+        "capital_required": 989.91,
+        "breakeven": 329.97,
+        "reward_risk_ratio": null,
+        "reward_risk_type": "UNDERLYING_BASELINE",
+        "scenario_asymmetry_ratio": 3,
+        "breakeven_margin_pct": 5.16,
+        "max_leg_spread_pct": null
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 321.46,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -25.53,
+          "scenario_return_on_risk_pct": -2.58,
+          "pricing_models_used": [],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 347,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 51.09,
+          "scenario_return_on_risk_pct": 5.16,
+          "pricing_models_used": [],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 355.52,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 76.65,
+          "scenario_return_on_risk_pct": 7.74,
+          "pricing_models_used": [],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C330.0::OPRA:AAPL261030C345.0::conservative",
+      "rank": 9,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-10-30",
+      "days_to_expiry": 45,
+      "legs": [
+        {
+          "contract": "OPRA:AAPL261030C330.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 330,
+          "fill_price": 13.9,
+          "bid": 12.85,
+          "ask": 13.9,
+          "spread_pct": 7.85,
+          "iv": 27.62,
+          "delta": 0.522974214522544,
+          "gamma": 0.012447194680130471,
+          "theta": -0.14592474358351482,
+          "vega": 0.46140924836827213
+        },
+        {
+          "contract": "OPRA:AAPL261030C345.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 345,
+          "fill_price": 6.9,
+          "bid": 6.9,
+          "ask": 7.5,
+          "spread_pct": 8.33,
+          "iv": 28.11,
+          "delta": 0.3475140547321075,
+          "gamma": 0.011345929724483969,
+          "theta": -0.13655346845331798,
+          "vega": 0.427988973015265
+        }
+      ],
+      "entry_debit": 700,
+      "capital_required": 700,
+      "max_loss": 700,
+      "max_profit": 800,
+      "max_profit_type": "DEFINED",
+      "breakeven": 337,
+      "reward_risk_ratio": 1.14,
+      "reward_risk_type": "DEFINED",
+      "score": 58.43,
+      "grade": "D",
+      "confidence": "MEDIUM",
+      "confidence_reasons": [
+        "max_leg_spread_pct=8.33"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 100,
+        "downside": 0,
+        "upside": 57.15,
+        "breakeven": 65.15,
+        "execution": 44.47
+      },
+      "raw_metrics": {
+        "downside_pnl": -700,
+        "base_pnl": 800,
+        "upside_pnl": 800,
+        "downside_return_on_risk_pct": -100,
+        "base_return_on_risk_pct": 114.29,
+        "upside_return_on_risk_pct": 114.29,
+        "max_loss": 700,
+        "capital_required": 700,
+        "breakeven": 337,
+        "reward_risk_ratio": 1.14,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 1.14,
+        "breakeven_margin_pct": 3.03,
+        "max_leg_spread_pct": 8.33
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 321.46,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -700,
+          "scenario_return_on_risk_pct": -100,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 347,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 800,
+          "scenario_return_on_risk_pct": 114.29,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 355.52,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 800,
+          "scenario_return_on_risk_pct": 114.29,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C345.0::conservative",
+      "rank": 10,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-10-30",
+      "days_to_expiry": 45,
+      "legs": [
+        {
+          "contract": "OPRA:AAPL261030C335.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 335,
+          "fill_price": 11.5,
+          "bid": 11,
+          "ask": 11.5,
+          "spread_pct": 4.44,
+          "iv": 29.12,
+          "delta": 0.46521965732075254,
+          "gamma": 0.011782303144106197,
+          "theta": -0.15279226536598126,
+          "vega": 0.46041831017528884
+        },
+        {
+          "contract": "OPRA:AAPL261030C345.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 345,
+          "fill_price": 6.9,
+          "bid": 6.9,
+          "ask": 7.5,
+          "spread_pct": 8.33,
+          "iv": 28.11,
+          "delta": 0.3475140547321075,
+          "gamma": 0.011345929724483969,
+          "theta": -0.13655346845331798,
+          "vega": 0.427988973015265
+        }
+      ],
+      "entry_debit": 460,
+      "capital_required": 460,
+      "max_loss": 460,
+      "max_profit": 540,
+      "max_profit_type": "DEFINED",
+      "breakeven": 339.6,
+      "reward_risk_ratio": 1.17,
+      "reward_risk_type": "DEFINED",
+      "score": 58.14,
+      "grade": "D",
+      "confidence": "MEDIUM",
+      "confidence_reasons": [
+        "max_leg_spread_pct=8.33"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 100,
+        "downside": 0,
+        "upside": 58.7,
+        "breakeven": 61.21,
+        "execution": 44.47
+      },
+      "raw_metrics": {
+        "downside_pnl": -460,
+        "base_pnl": 540,
+        "upside_pnl": 540,
+        "downside_return_on_risk_pct": -100,
+        "base_return_on_risk_pct": 117.39,
+        "upside_return_on_risk_pct": 117.39,
+        "max_loss": 460,
+        "capital_required": 460,
+        "breakeven": 339.6,
+        "reward_risk_ratio": 1.17,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 1.17,
+        "breakeven_margin_pct": 2.24,
+        "max_leg_spread_pct": 8.33
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 321.46,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -460,
+          "scenario_return_on_risk_pct": -100,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 347,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 540,
+          "scenario_return_on_risk_pct": 117.39,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 355.52,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 540,
+          "scenario_return_on_risk_pct": 117.39,
+          "pricing_models_used": [
+            "EXPIRATION_INTRINSIC"
+          ],
+          "warnings": []
+        }
+      }
+    }
+  ],
+  "near_miss_candidates": [],
+  "agent_response_guidance": {
+    "version": "OPTIONS_ANALYSIS_RESPONSE_GUIDANCE_V1",
+    "audience": "AGENT_OR_UI_CONSUMER",
+    "primary_decision_source": "ranking.decision_state",
+    "candidate_status_source": "top_candidates[].consideration_eligible",
+    "numeric_source_of_truth": "ai_contract.numeric_source_of_truth",
+    "ranking_model": "RANKING_MODEL_V1",
+    "decision_state": "TRADE_CANDIDATES_AVAILABLE",
+    "top_trade_candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C350.0::conservative",
+    "eligible_top_candidate_ids": [
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C350.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C340.0::OPRA:AAPL261030C350.0::conservative"
+    ],
+    "low_confidence_candidate_ids": [
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C325.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C330.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C320.0::OPRA:AAPL261120C330.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C320.0::OPRA:AAPL261120C325.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C320.0::conservative"
+    ],
+    "baseline_strategy_types": [
+      "NO_TRADE"
+    ],
+    "crr_hybrid_policy": {
+      "status": "AVAILABLE",
+      "mode": "DIAGNOSTIC_ONLY_NO_RANKING_CHANGE",
+      "action_counts": {
+        "LOCAL_ONLY": 20,
+        "HYBRID_REPRICE_CANDIDATE": 26,
+        "NO_ACTION": 2
+      },
+      "interpretation": "EVIDENCE_ONLY_NO_RANKING_OR_RECOMMENDATION_EFFECT"
+    },
+    "required_mentions": [
+      "Identify the user-supplied target price as a scenario assumption, not an engine forecast.",
+      "Use ranking.decision_state and consideration_eligible as the source of trade-candidate status.",
+      "Use only ai_contract.allowed_candidate_ids when discussing specific candidates.",
+      "Explicitly label LOW-confidence candidates when mentioning them.",
+      "If CRR diagnostics are discussed, state that they are evidence-only and ranking-isolated."
+    ],
+    "forbidden_claims": [
+      "Do not call any candidate a recommendation, buy signal, safe trade, or best trade.",
+      "Do not describe score or delta as a probability.",
+      "Do not invent contracts, strikes, expirations, prices, volume, or open interest.",
+      "Do not treat HYBRID_REPRICE_CANDIDATE as a trade recommendation or score override."
+    ]
+  },
+  "user_explanation_summary": {
+    "version": "OPTIONS_ANALYSIS_USER_SUMMARY_V1",
+    "decision_state": "TRADE_CANDIDATES_AVAILABLE",
+    "headline_status": "ELIGIBLE_CANDIDATES_AVAILABLE",
+    "headline": "2 eligible candidate(s) found; top candidate is BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C350.0::conservative.",
+    "thesis_assumption": {
+      "direction": "bullish",
+      "horizon_days": 45,
+      "base_target_price": 347,
+      "current_underlying_price": 329.97,
+      "expected_move_pct": 5.16
+    },
+    "eligible_candidate_count": 2,
+    "top_eligible_candidate_id": "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C350.0::conservative",
+    "near_miss_count": 0,
+    "low_confidence_candidate_count": 5,
+    "baseline_summary": {
+      "has_buy_stock": false,
+      "has_no_trade": true,
+      "eligible_baseline_types": [
+        "NO_TRADE"
+      ]
+    },
+    "crr_summary": {
+      "requested": true,
+      "status": "AVAILABLE",
+      "interpretation": "EVIDENCE_ONLY_NO_RANKING_EFFECT"
+    },
+    "assumption_notes": [
+      "The user-supplied base target price is a scenario assumption, not an engine forecast.",
+      "No IV scenario was specified \u2014 IV unchanged analysis assumption was used."
+    ],
+    "safety_notes": [
+      "Score is a comparative heuristic under the supplied scenarios, not a probability or expected return.",
+      "Delta is a Greek, not a probability of profit.",
+      "5 candidate(s) are LOW confidence and must be explicitly labeled as such if mentioned.",
+      "CRR hybrid diagnostics are evidence-only and ranking-isolated \u2014 never a recommendation or score override."
+    ]
+  },
+  "baselines": [
+    {
+      "candidate_id": "NO_TRADE::NASDAQ:AAPL",
+      "strategy_type": "NO_TRADE",
+      "ranking_class": "BASELINE",
+      "score": null,
+      "grade": null,
+      "confidence": "HIGH",
+      "consideration_eligible": true
+    }
+  ],
+  "field_provenance": {
+    "MARKET_NATIVE": [
+      "bid",
+      "ask",
+      "iv",
+      "bid_iv",
+      "ask_iv",
+      "delta",
+      "gamma",
+      "theta",
+      "vega",
+      "rho",
+      "theoretical_price",
+      "underlying_price"
+    ],
+    "MARKET_DERIVED": [
+      "spread_pct",
+      "mid",
+      "spread",
+      "iv_spread",
+      "fill_price"
+    ],
+    "ENGINE_CALCULATED": [
+      "entry_debit",
+      "capital_required",
+      "max_loss",
+      "max_profit",
+      "breakeven",
+      "reward_risk_ratio",
+      "scenario_pnl",
+      "scenario_return_on_risk_pct",
+      "estimated_value",
+      "score",
+      "grade",
+      "confidence",
+      "component_scores",
+      "analysis_snapshot_id",
+      "diagnostics.crr_hybrid_policy",
+      "agent_response_guidance",
+      "user_explanation_summary"
+    ],
+    "USER_INPUT": [
+      "symbol",
+      "direction",
+      "horizon_days",
+      "max_loss (constraint)",
+      "base_target_price"
+    ],
+    "DETERMINISTIC_ASSUMPTION": [
+      "contract_multiplier (assumed 100 for standard US equity options)",
+      "downside_target_price (helper-derived)",
+      "upside_target_price (helper-derived)",
+      "downside/base/upside iv_change_points (defaulted to 0 \u2014 no IV scenario specified)"
+    ]
+  },
+  "ai_contract": {
+    "allowed_candidate_ids": [
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C350.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C340.0::OPRA:AAPL261030C350.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C325.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C330.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C320.0::OPRA:AAPL261120C330.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C320.0::OPRA:AAPL261120C325.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C320.0::conservative",
+      "BUY_STOCK::NASDAQ:AAPL::329.97::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C330.0::OPRA:AAPL261030C345.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-10-30::OPRA:AAPL261030C335.0::OPRA:AAPL261030C345.0::conservative",
+      "NO_TRADE::NASDAQ:AAPL"
+    ],
+    "numeric_source_of_truth": "THIS_ANALYSIS_PACKET",
+    "rules": [
+      "Do not invent option contracts.",
+      "Do not invent prices.",
+      "Do not recalculate Greeks.",
+      "Do not recalculate max loss/profit.",
+      "Do not alter scenario P&L.",
+      "Do not state score as probability.",
+      "Do not state delta as probability of profit.",
+      "Do not claim consideration_eligible means recommendation.",
+      "If no candidate is eligible, preserve that result \u2014 do not promote a near-miss into a recommendation.",
+      "Explicitly mention LOW confidence when discussing a candidate.",
+      "Mention important scenario warnings (e.g. LARGE_TIME_STEP, NEAR_EXPIRATION) when present.",
+      "Do not treat crr_hybrid_policy diagnostics as a recommendation, score override, or production pricing switch.",
+      "Do not infer volume or open interest. Open interest is currently unavailable. Volume is not used by this analysis (not a filtering/scoring/ranking input) even where it may be technically obtainable elsewhere as optional live enrichment."
+    ]
+  },
+  "limitations": [
+    "Score is a heuristic comparative metric (RANKING_MODEL_V1), not a probability or expected return.",
+    "Scenario repricing (LOCAL_GREEK_APPROXIMATION) is a local approximation, not a full option pricing model \u2014 see Phase 0B limitations.",
+    "Ranking depends entirely on the user-supplied scenario prices; different assumptions produce different rankings.",
+    "Open interest is currently unavailable. Volume (technically obtainable via TradingView WebSocket subscription, but UI/subscription-dependent and event-driven, not a guaranteed initial snapshot) is not a dependency of this tool \u2014 neither volume nor open interest is used in filtering, scoring, or ranking.",
+    "No historical calibration of scoring weights or thresholds.",
+    "No earnings/event-driven volatility model \u2014 IV shocks default to 0 unless explicitly supplied.",
+    "No portfolio-level risk (correlation, margin, concentration) is modeled.",
+    "No early-exercise/assignment or dividend/ex-dividend modeling.",
+    "The scan2 request may be capped by TradingView at 4000 rows for very large chains; chain_completeness/warnings surface this, but the DTE window does not currently reduce the underlying request size.",
+    "No AI/LLM reasoning is performed by this tool \u2014 it returns structured, deterministic data only."
+  ]
+}
