@@ -196,6 +196,15 @@ loosen any rule in this section: the `ai_contract`/`agent_response_guidance`
 safety rules above remain fully binding regardless of what
 `user_explanation_summary` contains.
 
+If `formatOptionsAnalysisForUser(packet, options)`
+(`src/core/options/optionsAnalysisFormatter.js`, see
+`docs/phase-3d-options-analysis-formatter.md`) output is available, it may be
+preferred as the starting point for the user-facing explanation — it is a
+deterministic, non-AI renderer of the same packet (locale-formatted
+sections, no new numbers, `allowed_candidate_ids`-gated). It does not loosen
+or replace `ai_contract`/`agent_response_guidance`, which remain the
+binding safety rules regardless of whether the formatter is used.
+
 ### Score / confidence / eligibility language
 - Score and grade are a **comparative heuristic under the supplied scenarios**, not
   a probability, win rate, or expected return. Never turn "score 77" into "77%
