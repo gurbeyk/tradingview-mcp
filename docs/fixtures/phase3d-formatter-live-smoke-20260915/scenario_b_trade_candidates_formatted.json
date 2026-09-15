@@ -1,0 +1,62 @@
+{
+  "version": "OPTIONS_ANALYSIS_FORMATTED_RESPONSE_V1",
+  "locale": "tr",
+  "sections": [
+    {
+      "id": "thesis_assumption",
+      "title": "Senin Varsayımın",
+      "lines": [
+        "Sembol: NASDAQ:AAPL",
+        "Yön: yükseliş (bullish)",
+        "Ufuk (gün): 30",
+        "Güncel fiyat: 331.34",
+        "Hedef fiyat (kullanıcı varsayımı): 351",
+        "Beklenen hareket: %5.93 (19.66)"
+      ]
+    },
+    {
+      "id": "engine_result",
+      "title": "Motorun Sonucu",
+      "lines": [
+        "Karar durumu: TRADE_CANDIDATES_AVAILABLE — Değerlendirmeye uygun aday(lar) bulundu.",
+        "Değerlendirmeye uygun aday sayısı: 3",
+        "LOW güvenilirlikli aday sayısı: 7",
+        "Elenen (near-miss) aday sayısı: 0"
+      ]
+    },
+    {
+      "id": "eligible_candidates",
+      "title": "Değerlendirmeye Uygun Adaylar",
+      "lines": [
+        "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C335.0::OPRA:AAPL261120C350.0::conservative | Strateji: BULL_CALL_SPREAD | Vade: 2026-11-20 (66 gün kaldı) | skor: 60.74 (not: C) | güven: HIGH | maks. zarar: 635 | maks. kâr: 865 | başabaş: 341.35",
+        "BUY_STOCK::NASDAQ:AAPL::331.34::conservative | Strateji: BUY_STOCK | skor: 60.64 (not: C) | güven: HIGH | maks. zarar: 2319.38 | başabaş: 331.34",
+        "LONG_CALL::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C335.0::conservative | Strateji: LONG_CALL | Vade: 2026-11-20 (66 gün kaldı) | skor: 60.37 (not: C) | güven: HIGH | maks. zarar: 1450 | başabaş: 349.5"
+      ]
+    },
+    {
+      "id": "baselines",
+      "title": "Baseline Karşılaştırması",
+      "lines": [
+        "NO_TRADE | güven: HIGH | consideration_eligible: true"
+      ]
+    },
+    {
+      "id": "assumptions_and_risks",
+      "title": "Varsayımlar ve Riskler",
+      "lines": [
+        "Skor bir olasılık veya beklenen getiri değildir; yalnızca karşılaştırmalı bir sezgiseldir.",
+        "Delta bir Greek değeridir, kâr olasılığı değildir.",
+        "Hacim/açık pozisyon (open interest) verisi bu paketin bir parçası değildir ve uydurulmamıştır.",
+        "Senaryo fiyatlaması yerel bir Greek yaklaşımıdır (LOCAL_GREEK_APPROXIMATION), tam bir opsiyon fiyatlama modeli değildir.",
+        "7 aday LOW güven seviyesindedir; bu adaylar açıkça LOW olarak belirtilmelidir.",
+        "CRR hibrit tanı verisi yalnızca kanıt amaçlıdır (evidence-only) ve sıralamayı/skoru etkilemez."
+      ]
+    }
+  ],
+  "safety": {
+    "source": "deterministic_formatter",
+    "numeric_source_of_truth": "THIS_ANALYSIS_PACKET",
+    "allowed_candidate_ids_checked": true,
+    "contains_investment_advice_language": false
+  }
+}

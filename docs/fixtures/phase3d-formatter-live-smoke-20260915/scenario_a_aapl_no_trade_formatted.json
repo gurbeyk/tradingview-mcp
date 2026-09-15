@@ -1,0 +1,63 @@
+{
+  "version": "OPTIONS_ANALYSIS_FORMATTED_RESPONSE_V1",
+  "locale": "tr",
+  "sections": [
+    {
+      "id": "thesis_assumption",
+      "title": "Senin Varsayımın",
+      "lines": [
+        "Sembol: NASDAQ:AAPL",
+        "Yön: yükseliş (bullish)",
+        "Ufuk (gün): 45",
+        "Güncel fiyat: 331.34",
+        "Hedef fiyat (kullanıcı varsayımı): 348",
+        "Beklenen hareket: %5.03 (16.66)"
+      ]
+    },
+    {
+      "id": "engine_result",
+      "title": "Motorun Sonucu",
+      "lines": [
+        "Karar durumu: NO_TRADE_BASELINE_ONLY — Hiçbir opsiyon adayı değerlendirmeye uygun eşiği geçemedi — NO_TRADE tek uygun baseline.",
+        "Değerlendirmeye uygun aday sayısı: 0",
+        "LOW güvenilirlikli aday sayısı: 13",
+        "Elenen (near-miss) aday sayısı: 5"
+      ]
+    },
+    {
+      "id": "near_misses",
+      "title": "Elenen Adaylar (Neden Elendikleri)",
+      "lines": [
+        "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C315.0::OPRA:AAPL261120C330.0::conservative | Strateji: BULL_CALL_SPREAD | skor: 60.18 | güven: LOW | Gerekçe: CONFIDENCE_BELOW_THRESHOLD",
+        "BUY_STOCK::NASDAQ:AAPL::331.34::conservative | Strateji: BUY_STOCK | skor: 59.78 | güven: HIGH | Gerekçe: SCORE_BELOW_THRESHOLD",
+        "BULL_CALL_SPREAD::NASDAQ:AAPL::2026-11-20::OPRA:AAPL261120C320.0::OPRA:AAPL261120C330.0::conservative | Strateji: BULL_CALL_SPREAD | skor: 58.42 | güven: LOW | Gerekçe: SCORE_BELOW_THRESHOLD; CONFIDENCE_BELOW_THRESHOLD"
+      ]
+    },
+    {
+      "id": "baselines",
+      "title": "Baseline Karşılaştırması",
+      "lines": [
+        "NO_TRADE | güven: HIGH | consideration_eligible: true"
+      ]
+    },
+    {
+      "id": "assumptions_and_risks",
+      "title": "Varsayımlar ve Riskler",
+      "lines": [
+        "Skor bir olasılık veya beklenen getiri değildir; yalnızca karşılaştırmalı bir sezgiseldir.",
+        "Delta bir Greek değeridir, kâr olasılığı değildir.",
+        "Hacim/açık pozisyon (open interest) verisi bu paketin bir parçası değildir ve uydurulmamıştır.",
+        "Senaryo fiyatlaması yerel bir Greek yaklaşımıdır (LOCAL_GREEK_APPROXIMATION), tam bir opsiyon fiyatlama modeli değildir.",
+        "Hiçbir opsiyon adayı değerlendirmeye uygun eşiği geçemedi — NO_TRADE tek uygun baseline.",
+        "13 aday LOW güven seviyesindedir; bu adaylar açıkça LOW olarak belirtilmelidir.",
+        "CRR hibrit tanı verisi yalnızca kanıt amaçlıdır (evidence-only) ve sıralamayı/skoru etkilemez."
+      ]
+    }
+  ],
+  "safety": {
+    "source": "deterministic_formatter",
+    "numeric_source_of_truth": "THIS_ANALYSIS_PACKET",
+    "allowed_candidate_ids_checked": true,
+    "contains_investment_advice_language": false
+  }
+}
