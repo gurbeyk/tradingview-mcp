@@ -1,0 +1,1687 @@
+{
+  "analysis_type": "DIRECTIONAL_OPTIONS",
+  "analysis_snapshot_id": "a577d955ffb9eafa",
+  "analysis_as_of_utc": "2026-09-15T19:42:19.430Z",
+  "symbol": "NASDAQ:ONDS",
+  "underlying_price": 7.2427,
+  "direction": "bullish",
+  "horizon_days": 30,
+  "max_loss": 1000,
+  "thesis": {
+    "base_target_price": 7.6,
+    "expected_move_absolute": 0.36,
+    "expected_move_pct": 4.93
+  },
+  "input_echo": {
+    "symbol": "NASDAQ:ONDS",
+    "direction": "bullish",
+    "horizon_days": 30,
+    "max_loss": 1000,
+    "base_target_price": 7.6,
+    "downside_target_price": null,
+    "upside_target_price": null,
+    "downside_iv_change_points": null,
+    "base_iv_change_points": null,
+    "upside_iv_change_points": null,
+    "min_dte": null,
+    "max_dte": null,
+    "include_crr_hybrid_diagnostics": true,
+    "execution_model": "conservative",
+    "commission_per_contract": 0,
+    "contract_multiplier": 100,
+    "max_spread_pct": 15,
+    "max_ranked_results": 10
+  },
+  "scenario_definitions": {
+    "downside": {
+      "scenario_id": "DOWNSIDE",
+      "underlying_price": 7.06,
+      "iv_change_points": 0,
+      "days_forward": 30,
+      "scenario_source": "DETERMINISTIC_HELPER"
+    },
+    "base": {
+      "scenario_id": "BASE",
+      "underlying_price": 7.6,
+      "iv_change_points": 0,
+      "days_forward": 30,
+      "scenario_source": "USER_EXPLICIT"
+    },
+    "upside": {
+      "scenario_id": "UPSIDE",
+      "underlying_price": 7.78,
+      "iv_change_points": 0,
+      "days_forward": 30,
+      "scenario_source": "DETERMINISTIC_HELPER"
+    }
+  },
+  "data_source": {
+    "provider": "TradingView Options Scanner",
+    "endpoint": "/options/scan2",
+    "options_retrieved_at_utc": "2026-09-15T19:42:19.428Z",
+    "chain_completeness": "COMPLETE",
+    "warnings": [
+      "IV_SCENARIO_NOT_SPECIFIED"
+    ]
+  },
+  "candidate_generation": {
+    "input_contract_count": 168,
+    "eligible_contract_count": 84,
+    "candidate_count": 21,
+    "rejected_count": 79,
+    "rejection_summary": {
+      "WIDE_SPREAD": 63,
+      "DELTA_OUT_OF_RANGE": 16
+    }
+  },
+  "ranking": {
+    "model": "RANKING_MODEL_V1",
+    "disclaimer": "Comparative heuristic score under user-supplied scenarios; not probability or expected return.",
+    "decision_state": "NO_TRADE_BASELINE_ONLY",
+    "top_trade_candidate_id": null,
+    "fallback_baseline": "NO_TRADE",
+    "thresholds": {
+      "minimum_score_for_consideration": 60,
+      "minimum_confidence_for_consideration": "MEDIUM",
+      "min_capped_reward_risk": null,
+      "configured_max_spread_pct": 15
+    }
+  },
+  "scenario_quality_summary": {
+    "HIGH_CONFIDENCE_CANDIDATES": 4,
+    "MEDIUM_CONFIDENCE_CANDIDATES": 6,
+    "LOW_CONFIDENCE_CANDIDATES": 10
+  },
+  "diagnostics": {
+    "crr_hybrid_policy": {
+      "status": "AVAILABLE",
+      "mode": "DIAGNOSTIC_ONLY_NO_RANKING_CHANGE",
+      "market_inputs": [
+        {
+          "expiration": "2026-10-16",
+          "days_to_expiry": 31,
+          "mode": "PARTIAL_EXTERNAL_INPUTS",
+          "overall_confidence": "MEDIUM",
+          "discount_rate_source": "TREASURY_BILL_COUPON_EQUIVALENT_NORMALIZED",
+          "dividend_mode": "ZERO_DIVIDEND_CONFIRMED",
+          "borrow_source": "NOT_CONNECTED",
+          "warnings": [
+            "TREASURY_RATE_FROZEN_FALLBACK_NOT_LIVE",
+            "BORROW_DATA_UNAVAILABLE"
+          ]
+        },
+        {
+          "expiration": "2026-11-20",
+          "days_to_expiry": 66,
+          "mode": "PARTIAL_EXTERNAL_INPUTS",
+          "overall_confidence": "MEDIUM",
+          "discount_rate_source": "TREASURY_BILL_COUPON_EQUIVALENT_NORMALIZED",
+          "dividend_mode": "ZERO_DIVIDEND_CONFIRMED",
+          "borrow_source": "NOT_CONNECTED",
+          "warnings": [
+            "TREASURY_RATE_FROZEN_FALLBACK_NOT_LIVE",
+            "BORROW_DATA_UNAVAILABLE"
+          ]
+        }
+      ],
+      "summary": {
+        "total_candidates": 21,
+        "by_action": {
+          "HYBRID_REPRICE_CANDIDATE": 7,
+          "LOCAL_ONLY": 10,
+          "CRR_SHADOW_REVIEW": 2,
+          "NO_ACTION": 2
+        },
+        "crr_shadow_available_count": 21,
+        "local_warning_count": 8
+      },
+      "candidates": [
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C10.0::OPRA:ONDS261016C7.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "HYBRID_REPRICE_CANDIDATE",
+          "reasons": [
+            "LOCAL_WARNINGS_MAJOR",
+            "LOCAL_WARNINGS_MODERATE",
+            "MODEL_DISAGREEMENT_HIGH"
+          ],
+          "local_warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION",
+            "INTRINSIC_FLOOR_APPLIED"
+          ],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_HIGH",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C8.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "HYBRID_REPRICE_CANDIDATE",
+          "reasons": [
+            "LOCAL_WARNINGS_MAJOR",
+            "MODEL_DISAGREEMENT_HIGH"
+          ],
+          "local_warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION"
+          ],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_HIGH",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C9.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "HYBRID_REPRICE_CANDIDATE",
+          "reasons": [
+            "LOCAL_WARNINGS_MAJOR",
+            "LOCAL_WARNINGS_MODERATE",
+            "MODEL_DISAGREEMENT_HIGH"
+          ],
+          "local_warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION",
+            "INTRINSIC_FLOOR_APPLIED"
+          ],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_HIGH",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C10.0::OPRA:ONDS261120C7.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "LOCAL_ONLY",
+          "reasons": [
+            "LOCAL_CLEAN_AND_CRR_AGREES"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::OPRA:ONDS261120C8.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "LOCAL_ONLY",
+          "reasons": [
+            "LOCAL_CLEAN_AND_CRR_AGREES"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::OPRA:ONDS261120C9.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "LOCAL_ONLY",
+          "reasons": [
+            "LOCAL_CLEAN_AND_CRR_AGREES"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C10.0::OPRA:ONDS261120C8.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "LOCAL_ONLY",
+          "reasons": [
+            "LOCAL_CLEAN_AND_CRR_AGREES"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C8.0::OPRA:ONDS261120C9.0::conservative",
+          "strategy_type": "BULL_CALL_SPREAD",
+          "action": "LOCAL_ONLY",
+          "reasons": [
+            "LOCAL_CLEAN_AND_CRR_AGREES"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW",
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "BUY_STOCK::NASDAQ:ONDS::7.24::conservative",
+          "strategy_type": "BUY_STOCK",
+          "action": "NO_ACTION",
+          "reasons": [
+            "NON_OPTION_BASELINE"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": null,
+          "crr_shadow_available": true
+        },
+        {
+          "candidate_id": "LONG_CALL::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::conservative",
+          "strategy_type": "LONG_CALL",
+          "action": "LOCAL_ONLY",
+          "reasons": [
+            "LOCAL_CLEAN_AND_CRR_AGREES"
+          ],
+          "local_warnings": [],
+          "max_model_disagreement_level": "MODEL_DISAGREEMENT_LOW",
+          "crr_shadow_available": true
+        }
+      ]
+    }
+  },
+  "top_candidates": [
+    {
+      "candidate_id": "BUY_STOCK::NASDAQ:ONDS::7.24::conservative",
+      "rank": 1,
+      "strategy_type": "BUY_STOCK",
+      "ranking_class": "UNDERLYING_BASELINE",
+      "expiration": null,
+      "days_to_expiry": null,
+      "legs": [
+        {
+          "role": "long",
+          "action": "BUY",
+          "shares": 138
+        }
+      ],
+      "entry_debit": 999.49,
+      "capital_required": 999.49,
+      "max_loss": 999.49,
+      "max_profit": null,
+      "max_profit_type": "UNLIMITED",
+      "breakeven": 7.24,
+      "reward_risk_ratio": null,
+      "reward_risk_type": "UNDERLYING_BASELINE",
+      "score": 59.72,
+      "grade": "D",
+      "confidence": "HIGH",
+      "confidence_reasons": [],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 52.49,
+        "downside": 97.51,
+        "upside": 3.73,
+        "breakeven": 74.85,
+        "execution": 100
+      },
+      "raw_metrics": {
+        "downside_pnl": -24.84,
+        "base_pnl": 49.68,
+        "upside_pnl": 74.52,
+        "downside_return_on_risk_pct": -2.49,
+        "base_return_on_risk_pct": 4.97,
+        "upside_return_on_risk_pct": 7.46,
+        "max_loss": 999.49,
+        "capital_required": 999.49,
+        "breakeven": 7.24,
+        "reward_risk_ratio": null,
+        "reward_risk_type": "UNDERLYING_BASELINE",
+        "scenario_asymmetry_ratio": 3,
+        "breakeven_margin_pct": 4.97,
+        "max_leg_spread_pct": null
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 7.06,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -24.84,
+          "scenario_return_on_risk_pct": -2.49,
+          "pricing_models_used": [],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 7.6,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 49.68,
+          "scenario_return_on_risk_pct": 4.97,
+          "pricing_models_used": [],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 7.78,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 74.52,
+          "scenario_return_on_risk_pct": 7.46,
+          "pricing_models_used": [],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C8.0::conservative",
+      "rank": 2,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-10-16",
+      "days_to_expiry": 31,
+      "legs": [
+        {
+          "contract": "OPRA:ONDS261016C7.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 7,
+          "fill_price": 0.76,
+          "bid": 0.7,
+          "ask": 0.76,
+          "spread_pct": 8.22,
+          "iv": 71.34,
+          "delta": 0.606510167660655,
+          "gamma": 0.25545860484749033,
+          "theta": -0.009437394301185214,
+          "vega": 0.008117609816082104
+        },
+        {
+          "contract": "OPRA:ONDS261016C8.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 8,
+          "fill_price": 0.35,
+          "bid": 0.35,
+          "ask": 0.37,
+          "spread_pct": 5.56,
+          "iv": 75.97,
+          "delta": 0.36838182000696423,
+          "gamma": 0.23515852519198469,
+          "theta": -0.009808660845257833,
+          "vega": 0.007957010577598842
+        }
+      ],
+      "entry_debit": 41,
+      "capital_required": 41,
+      "max_loss": 41,
+      "max_profit": 59,
+      "max_profit_type": "DEFINED",
+      "breakeven": 7.41,
+      "reward_risk_ratio": 1.44,
+      "reward_risk_type": "DEFINED",
+      "score": 53.68,
+      "grade": "D",
+      "confidence": "LOW",
+      "confidence_reasons": [
+        "LARGE_TIME_STEP (downside)",
+        "NEAR_EXPIRATION (downside)",
+        "LARGE_TIME_STEP (base)",
+        "NEAR_EXPIRATION (base)",
+        "LARGE_TIME_STEP (upside)",
+        "NEAR_EXPIRATION (upside)",
+        "max_leg_spread_pct=8.22"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD",
+        "CONFIDENCE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 56.1,
+        "downside": 80.49,
+        "upside": 10.98,
+        "breakeven": 63.12,
+        "execution": 45.2
+      },
+      "raw_metrics": {
+        "downside_pnl": -8,
+        "base_pnl": 5,
+        "upside_pnl": 9,
+        "downside_return_on_risk_pct": -19.51,
+        "base_return_on_risk_pct": 12.2,
+        "upside_return_on_risk_pct": 21.95,
+        "max_loss": 41,
+        "capital_required": 41,
+        "breakeven": 7.41,
+        "reward_risk_ratio": 1.44,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 1.13,
+        "breakeven_margin_pct": 2.62,
+        "max_leg_spread_pct": 8.22
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 7.06,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -8,
+          "scenario_return_on_risk_pct": -19.51,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION"
+          ]
+        },
+        "base": {
+          "underlying_price": 7.6,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 5,
+          "scenario_return_on_risk_pct": 12.2,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION"
+          ]
+        },
+        "upside": {
+          "underlying_price": 7.78,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 9,
+          "scenario_return_on_risk_pct": 21.95,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION"
+          ]
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::OPRA:ONDS261120C8.0::conservative",
+      "rank": 3,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:ONDS261120C7.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 7,
+          "fill_price": 1.15,
+          "bid": 1.08,
+          "ask": 1.15,
+          "spread_pct": 6.28,
+          "iv": 80.87,
+          "delta": 0.608549496564788,
+          "gamma": 0.15419701316580098,
+          "theta": -0.007332118459334396,
+          "vega": 0.011830700728681573
+        },
+        {
+          "contract": "OPRA:ONDS261120C8.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 8,
+          "fill_price": 0.74,
+          "bid": 0.74,
+          "ask": 0.75,
+          "spread_pct": 1.34,
+          "iv": 83.84,
+          "delta": 0.4616807045366636,
+          "gamma": 0.1537679197541045,
+          "theta": -0.007833644398852386,
+          "vega": 0.0122317121639271
+        }
+      ],
+      "entry_debit": 41,
+      "capital_required": 41,
+      "max_loss": 41,
+      "max_profit": 59,
+      "max_profit_type": "DEFINED",
+      "breakeven": 7.41,
+      "reward_risk_ratio": 1.44,
+      "reward_risk_type": "DEFINED",
+      "score": 53.05,
+      "grade": "D",
+      "confidence": "MEDIUM",
+      "confidence_reasons": [
+        "max_leg_spread_pct=6.28"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 52.44,
+        "downside": 85.37,
+        "upside": 4.88,
+        "breakeven": 63.12,
+        "execution": 58.13
+      },
+      "raw_metrics": {
+        "downside_pnl": -6,
+        "base_pnl": 2,
+        "upside_pnl": 4,
+        "downside_return_on_risk_pct": -14.63,
+        "base_return_on_risk_pct": 4.88,
+        "upside_return_on_risk_pct": 9.76,
+        "max_loss": 41,
+        "capital_required": 41,
+        "breakeven": 7.41,
+        "reward_risk_ratio": 1.44,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 0.67,
+        "breakeven_margin_pct": 2.62,
+        "max_leg_spread_pct": 6.28
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 7.06,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -6,
+          "scenario_return_on_risk_pct": -14.63,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 7.6,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 2,
+          "scenario_return_on_risk_pct": 4.88,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 7.78,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 4,
+          "scenario_return_on_risk_pct": 9.76,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::OPRA:ONDS261120C9.0::conservative",
+      "rank": 4,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:ONDS261120C7.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 7,
+          "fill_price": 1.15,
+          "bid": 1.08,
+          "ask": 1.15,
+          "spread_pct": 6.28,
+          "iv": 80.87,
+          "delta": 0.608549496564788,
+          "gamma": 0.15419701316580098,
+          "theta": -0.007332118459334396,
+          "vega": 0.011830700728681573
+        },
+        {
+          "contract": "OPRA:ONDS261120C9.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 9,
+          "fill_price": 0.49,
+          "bid": 0.49,
+          "ask": 0.51,
+          "spread_pct": 4,
+          "iv": 86.01,
+          "delta": 0.34215492706010125,
+          "gamma": 0.13864145082358634,
+          "theta": -0.007419530951959147,
+          "vega": 0.0113135585194435
+        }
+      ],
+      "entry_debit": 66,
+      "capital_required": 66,
+      "max_loss": 66,
+      "max_profit": 134,
+      "max_profit_type": "DEFINED",
+      "breakeven": 7.66,
+      "reward_risk_ratio": 2.03,
+      "reward_risk_type": "DEFINED",
+      "score": 50.54,
+      "grade": "D",
+      "confidence": "MEDIUM",
+      "confidence_reasons": [
+        "max_leg_spread_pct=6.28"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 53.03,
+        "downside": 83.33,
+        "upside": 6.82,
+        "breakeven": 45.86,
+        "execution": 58.13
+      },
+      "raw_metrics": {
+        "downside_pnl": -11,
+        "base_pnl": 4,
+        "upside_pnl": 9,
+        "downside_return_on_risk_pct": -16.67,
+        "base_return_on_risk_pct": 6.06,
+        "upside_return_on_risk_pct": 13.64,
+        "max_loss": 66,
+        "capital_required": 66,
+        "breakeven": 7.66,
+        "reward_risk_ratio": 2.03,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 0.82,
+        "breakeven_margin_pct": -0.83,
+        "max_leg_spread_pct": 6.28
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 7.06,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -11,
+          "scenario_return_on_risk_pct": -16.67,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 7.6,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 4,
+          "scenario_return_on_risk_pct": 6.06,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 7.78,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 9,
+          "scenario_return_on_risk_pct": 13.64,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C10.0::OPRA:ONDS261120C7.0::conservative",
+      "rank": 5,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:ONDS261120C7.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 7,
+          "fill_price": 1.15,
+          "bid": 1.08,
+          "ask": 1.15,
+          "spread_pct": 6.28,
+          "iv": 80.87,
+          "delta": 0.608549496564788,
+          "gamma": 0.15419701316580098,
+          "theta": -0.007332118459334396,
+          "vega": 0.011830700728681573
+        },
+        {
+          "contract": "OPRA:ONDS261120C10.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 10,
+          "fill_price": 0.32,
+          "bid": 0.32,
+          "ask": 0.34,
+          "spread_pct": 6.06,
+          "iv": 87.56,
+          "delta": 0.24960715111963844,
+          "gamma": 0.1177292647957069,
+          "theta": -0.0065221230752711455,
+          "vega": 0.009780161905745662
+        }
+      ],
+      "entry_debit": 83,
+      "capital_required": 83,
+      "max_loss": 83,
+      "max_profit": 217,
+      "max_profit_type": "DEFINED",
+      "breakeven": 7.83,
+      "reward_risk_ratio": 2.61,
+      "reward_risk_type": "DEFINED",
+      "score": 47.75,
+      "grade": "F",
+      "confidence": "MEDIUM",
+      "confidence_reasons": [
+        "max_leg_spread_pct=6.28"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 52.41,
+        "downside": 80.72,
+        "upside": 6.03,
+        "breakeven": 34.12,
+        "execution": 58.13
+      },
+      "raw_metrics": {
+        "downside_pnl": -16,
+        "base_pnl": 4,
+        "upside_pnl": 10,
+        "downside_return_on_risk_pct": -19.28,
+        "base_return_on_risk_pct": 4.82,
+        "upside_return_on_risk_pct": 12.05,
+        "max_loss": 83,
+        "capital_required": 83,
+        "breakeven": 7.83,
+        "reward_risk_ratio": 2.61,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 0.63,
+        "breakeven_margin_pct": -3.18,
+        "max_leg_spread_pct": 6.28
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 7.06,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -16,
+          "scenario_return_on_risk_pct": -19.28,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 7.6,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 4,
+          "scenario_return_on_risk_pct": 4.82,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 7.78,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 10,
+          "scenario_return_on_risk_pct": 12.05,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C8.0::OPRA:ONDS261120C9.0::conservative",
+      "rank": 6,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:ONDS261120C8.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 8,
+          "fill_price": 0.75,
+          "bid": 0.74,
+          "ask": 0.75,
+          "spread_pct": 1.34,
+          "iv": 83.84,
+          "delta": 0.4616807045366636,
+          "gamma": 0.1537679197541045,
+          "theta": -0.007833644398852386,
+          "vega": 0.0122317121639271
+        },
+        {
+          "contract": "OPRA:ONDS261120C9.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 9,
+          "fill_price": 0.49,
+          "bid": 0.49,
+          "ask": 0.51,
+          "spread_pct": 4,
+          "iv": 86.01,
+          "delta": 0.34215492706010125,
+          "gamma": 0.13864145082358634,
+          "theta": -0.007419530951959147,
+          "vega": 0.0113135585194435
+        }
+      ],
+      "entry_debit": 26,
+      "capital_required": 26,
+      "max_loss": 26,
+      "max_profit": 74,
+      "max_profit_type": "DEFINED",
+      "breakeven": 8.26,
+      "reward_risk_ratio": 2.85,
+      "reward_risk_type": "DEFINED",
+      "score": 43.27,
+      "grade": "F",
+      "confidence": "HIGH",
+      "confidence_reasons": [],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 51.93,
+        "downside": 76.92,
+        "upside": 7.69,
+        "breakeven": 4.44,
+        "execution": 73.33
+      },
+      "raw_metrics": {
+        "downside_pnl": -6,
+        "base_pnl": 1,
+        "upside_pnl": 4,
+        "downside_return_on_risk_pct": -23.08,
+        "base_return_on_risk_pct": 3.85,
+        "upside_return_on_risk_pct": 15.38,
+        "max_loss": 26,
+        "capital_required": 26,
+        "breakeven": 8.26,
+        "reward_risk_ratio": 2.85,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 0.67,
+        "breakeven_margin_pct": -9.11,
+        "max_leg_spread_pct": 4
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 7.06,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -6,
+          "scenario_return_on_risk_pct": -23.08,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 7.6,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 1,
+          "scenario_return_on_risk_pct": 3.85,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 7.78,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 4,
+          "scenario_return_on_risk_pct": 15.38,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C9.0::conservative",
+      "rank": 7,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-10-16",
+      "days_to_expiry": 31,
+      "legs": [
+        {
+          "contract": "OPRA:ONDS261016C7.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 7,
+          "fill_price": 0.76,
+          "bid": 0.7,
+          "ask": 0.76,
+          "spread_pct": 8.22,
+          "iv": 71.34,
+          "delta": 0.606510167660655,
+          "gamma": 0.25545860484749033,
+          "theta": -0.009437394301185214,
+          "vega": 0.008117609816082104
+        },
+        {
+          "contract": "OPRA:ONDS261016C9.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 9,
+          "fill_price": 0.16,
+          "bid": 0.16,
+          "ask": 0.18,
+          "spread_pct": 11.76,
+          "iv": 79.87,
+          "delta": 0.20768728674490639,
+          "gamma": 0.16985416131937495,
+          "theta": -0.007817831998159072,
+          "vega": 0.0060427958599900185
+        }
+      ],
+      "entry_debit": 60,
+      "capital_required": 60,
+      "max_loss": 60,
+      "max_profit": 140,
+      "max_profit_type": "DEFINED",
+      "breakeven": 7.6,
+      "reward_risk_ratio": 2.33,
+      "reward_risk_type": "DEFINED",
+      "score": 43,
+      "grade": "F",
+      "confidence": "LOW",
+      "confidence_reasons": [
+        "LARGE_TIME_STEP (downside)",
+        "NEAR_EXPIRATION (downside)",
+        "INTRINSIC_FLOOR_APPLIED (downside)",
+        "LARGE_TIME_STEP (base)",
+        "NEAR_EXPIRATION (base)",
+        "LARGE_TIME_STEP (upside)",
+        "NEAR_EXPIRATION (upside)",
+        "max_leg_spread_pct=11.76 exceeds 10%"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD",
+        "CONFIDENCE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 53.34,
+        "downside": 55,
+        "upside": 10,
+        "breakeven": 50,
+        "execution": 21.6
+      },
+      "raw_metrics": {
+        "downside_pnl": -27,
+        "base_pnl": 4,
+        "upside_pnl": 12,
+        "downside_return_on_risk_pct": -45,
+        "base_return_on_risk_pct": 6.67,
+        "upside_return_on_risk_pct": 20,
+        "max_loss": 60,
+        "capital_required": 60,
+        "breakeven": 7.6,
+        "reward_risk_ratio": 2.33,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 0.44,
+        "breakeven_margin_pct": 0,
+        "max_leg_spread_pct": 11.76
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 7.06,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -27,
+          "scenario_return_on_risk_pct": -45,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION",
+            "INTRINSIC_FLOOR_APPLIED"
+          ]
+        },
+        "base": {
+          "underlying_price": 7.6,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 4,
+          "scenario_return_on_risk_pct": 6.67,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION"
+          ]
+        },
+        "upside": {
+          "underlying_price": 7.78,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 12,
+          "scenario_return_on_risk_pct": 20,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION"
+          ]
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C10.0::OPRA:ONDS261120C8.0::conservative",
+      "rank": 8,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:ONDS261120C8.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 8,
+          "fill_price": 0.75,
+          "bid": 0.74,
+          "ask": 0.75,
+          "spread_pct": 1.34,
+          "iv": 83.84,
+          "delta": 0.4616807045366636,
+          "gamma": 0.1537679197541045,
+          "theta": -0.007833644398852386,
+          "vega": 0.0122317121639271
+        },
+        {
+          "contract": "OPRA:ONDS261120C10.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 10,
+          "fill_price": 0.32,
+          "bid": 0.32,
+          "ask": 0.34,
+          "spread_pct": 6.06,
+          "iv": 87.56,
+          "delta": 0.24960715111963844,
+          "gamma": 0.1177292647957069,
+          "theta": -0.0065221230752711455,
+          "vega": 0.009780161905745662
+        }
+      ],
+      "entry_debit": 43,
+      "capital_required": 43,
+      "max_loss": 43,
+      "max_profit": 157,
+      "max_profit_type": "DEFINED",
+      "breakeven": 8.43,
+      "reward_risk_ratio": 3.65,
+      "reward_risk_type": "DEFINED",
+      "score": 40.66,
+      "grade": "F",
+      "confidence": "MEDIUM",
+      "confidence_reasons": [
+        "max_leg_spread_pct=6.06"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 51.17,
+        "downside": 74.42,
+        "upside": 5.82,
+        "breakeven": 0,
+        "execution": 59.6
+      },
+      "raw_metrics": {
+        "downside_pnl": -11,
+        "base_pnl": 1,
+        "upside_pnl": 5,
+        "downside_return_on_risk_pct": -25.58,
+        "base_return_on_risk_pct": 2.33,
+        "upside_return_on_risk_pct": 11.63,
+        "max_loss": 43,
+        "capital_required": 43,
+        "breakeven": 8.43,
+        "reward_risk_ratio": 3.65,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 0.45,
+        "breakeven_margin_pct": -11.46,
+        "max_leg_spread_pct": 6.06
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 7.06,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -11,
+          "scenario_return_on_risk_pct": -25.58,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 7.6,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 1,
+          "scenario_return_on_risk_pct": 2.33,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 7.78,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 5,
+          "scenario_return_on_risk_pct": 11.63,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "LONG_CALL::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::conservative",
+      "rank": 9,
+      "strategy_type": "LONG_CALL",
+      "ranking_class": "TRADE",
+      "expiration": "2026-11-20",
+      "days_to_expiry": 66,
+      "legs": [
+        {
+          "contract": "OPRA:ONDS261120C7.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 7,
+          "fill_price": 1.15,
+          "bid": 1.08,
+          "ask": 1.15,
+          "spread_pct": 6.28,
+          "iv": 80.87,
+          "delta": 0.608549496564788,
+          "gamma": 0.15419701316580098,
+          "theta": -0.007332118459334396,
+          "vega": 0.011830700728681573
+        }
+      ],
+      "entry_debit": 115,
+      "capital_required": 115,
+      "max_loss": 115,
+      "max_profit": null,
+      "max_profit_type": "UNLIMITED",
+      "breakeven": 8.15,
+      "reward_risk_ratio": null,
+      "reward_risk_type": "UNBOUNDED_UPSIDE",
+      "score": 39.04,
+      "grade": "F",
+      "confidence": "MEDIUM",
+      "confidence_reasons": [
+        "max_leg_spread_pct=6.28"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 48.26,
+        "downside": 66.96,
+        "upside": 3.48,
+        "breakeven": 12.03,
+        "execution": 58.13
+      },
+      "raw_metrics": {
+        "downside_pnl": -38,
+        "base_pnl": -4,
+        "upside_pnl": 8,
+        "downside_return_on_risk_pct": -33.04,
+        "base_return_on_risk_pct": -3.48,
+        "upside_return_on_risk_pct": 6.96,
+        "max_loss": 115,
+        "capital_required": 115,
+        "breakeven": 8.15,
+        "reward_risk_ratio": null,
+        "reward_risk_type": "UNBOUNDED_UPSIDE",
+        "scenario_asymmetry_ratio": 0.21,
+        "breakeven_margin_pct": -7.59,
+        "max_leg_spread_pct": 6.28
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 7.06,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -38,
+          "scenario_return_on_risk_pct": -33.04,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "base": {
+          "underlying_price": 7.6,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -4,
+          "scenario_return_on_risk_pct": -3.48,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        },
+        "upside": {
+          "underlying_price": 7.78,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 8,
+          "scenario_return_on_risk_pct": 6.96,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C10.0::OPRA:ONDS261016C7.0::conservative",
+      "rank": 10,
+      "strategy_type": "BULL_CALL_SPREAD",
+      "ranking_class": "TRADE",
+      "expiration": "2026-10-16",
+      "days_to_expiry": 31,
+      "legs": [
+        {
+          "contract": "OPRA:ONDS261016C7.0",
+          "action": "BUY",
+          "option_type": "call",
+          "strike": 7,
+          "fill_price": 0.76,
+          "bid": 0.7,
+          "ask": 0.76,
+          "spread_pct": 8.22,
+          "iv": 71.34,
+          "delta": 0.606510167660655,
+          "gamma": 0.25545860484749033,
+          "theta": -0.009437394301185214,
+          "vega": 0.008117609816082104
+        },
+        {
+          "contract": "OPRA:ONDS261016C10.0",
+          "action": "SELL",
+          "option_type": "call",
+          "strike": 10,
+          "fill_price": 0.08,
+          "bid": 0.08,
+          "ask": 0.09,
+          "spread_pct": 11.76,
+          "iv": 83.25,
+          "delta": 0.11390055239670346,
+          "gamma": 0.10972815410223376,
+          "theta": -0.005480507878513417,
+          "vega": 0.004068522490406396
+        }
+      ],
+      "entry_debit": 68,
+      "capital_required": 68,
+      "max_loss": 68,
+      "max_profit": 232,
+      "max_profit_type": "DEFINED",
+      "breakeven": 7.68,
+      "reward_risk_ratio": 3.41,
+      "reward_risk_type": "DEFINED",
+      "score": 38.89,
+      "grade": "F",
+      "confidence": "LOW",
+      "confidence_reasons": [
+        "LARGE_TIME_STEP (downside)",
+        "NEAR_EXPIRATION (downside)",
+        "INTRINSIC_FLOOR_APPLIED (downside)",
+        "LARGE_TIME_STEP (base)",
+        "NEAR_EXPIRATION (base)",
+        "INTRINSIC_FLOOR_APPLIED (base)",
+        "LARGE_TIME_STEP (upside)",
+        "NEAR_EXPIRATION (upside)",
+        "max_leg_spread_pct=11.76 exceeds 10%"
+      ],
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD",
+        "CONFIDENCE_BELOW_THRESHOLD"
+      ],
+      "component_scores": {
+        "base": 49.27,
+        "downside": 48.53,
+        "upside": 8.82,
+        "breakeven": 44.48,
+        "execution": 21.6
+      },
+      "raw_metrics": {
+        "downside_pnl": -35,
+        "base_pnl": -1,
+        "upside_pnl": 12,
+        "downside_return_on_risk_pct": -51.47,
+        "base_return_on_risk_pct": -1.47,
+        "upside_return_on_risk_pct": 17.65,
+        "max_loss": 68,
+        "capital_required": 68,
+        "breakeven": 7.68,
+        "reward_risk_ratio": 3.41,
+        "reward_risk_type": "DEFINED",
+        "scenario_asymmetry_ratio": 0.34,
+        "breakeven_margin_pct": -1.1,
+        "max_leg_spread_pct": 11.76
+      },
+      "scenario_results": {
+        "downside": {
+          "underlying_price": 7.06,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -35,
+          "scenario_return_on_risk_pct": -51.47,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION",
+            "INTRINSIC_FLOOR_APPLIED"
+          ]
+        },
+        "base": {
+          "underlying_price": 7.6,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": -1,
+          "scenario_return_on_risk_pct": -1.47,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION",
+            "INTRINSIC_FLOOR_APPLIED"
+          ]
+        },
+        "upside": {
+          "underlying_price": 7.78,
+          "iv_change_points_requested": 0,
+          "available": true,
+          "scenario_pnl": 12,
+          "scenario_return_on_risk_pct": 17.65,
+          "pricing_models_used": [
+            "LOCAL_GREEK_APPROXIMATION"
+          ],
+          "warnings": [
+            "LARGE_TIME_STEP",
+            "NEAR_EXPIRATION"
+          ]
+        }
+      }
+    }
+  ],
+  "near_miss_candidates": [
+    {
+      "candidate_id": "BUY_STOCK::NASDAQ:ONDS::7.24::conservative",
+      "strategy_type": "BUY_STOCK",
+      "score": 59.72,
+      "confidence": "HIGH",
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ]
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C8.0::conservative",
+      "strategy_type": "BULL_CALL_SPREAD",
+      "score": 53.68,
+      "confidence": "LOW",
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD",
+        "CONFIDENCE_BELOW_THRESHOLD"
+      ]
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::OPRA:ONDS261120C8.0::conservative",
+      "strategy_type": "BULL_CALL_SPREAD",
+      "score": 53.05,
+      "confidence": "MEDIUM",
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ]
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::OPRA:ONDS261120C9.0::conservative",
+      "strategy_type": "BULL_CALL_SPREAD",
+      "score": 50.54,
+      "confidence": "MEDIUM",
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ]
+    },
+    {
+      "candidate_id": "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C10.0::OPRA:ONDS261120C7.0::conservative",
+      "strategy_type": "BULL_CALL_SPREAD",
+      "score": 47.75,
+      "confidence": "MEDIUM",
+      "consideration_eligible": false,
+      "consideration_reasons": [
+        "SCORE_BELOW_THRESHOLD"
+      ]
+    }
+  ],
+  "agent_response_guidance": {
+    "version": "OPTIONS_ANALYSIS_RESPONSE_GUIDANCE_V1",
+    "audience": "AGENT_OR_UI_CONSUMER",
+    "primary_decision_source": "ranking.decision_state",
+    "candidate_status_source": "top_candidates[].consideration_eligible",
+    "numeric_source_of_truth": "ai_contract.numeric_source_of_truth",
+    "ranking_model": "RANKING_MODEL_V1",
+    "decision_state": "NO_TRADE_BASELINE_ONLY",
+    "top_trade_candidate_id": null,
+    "eligible_top_candidate_ids": [],
+    "low_confidence_candidate_ids": [
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C8.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C9.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C10.0::OPRA:ONDS261016C7.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C8.0::conservative"
+    ],
+    "baseline_strategy_types": [
+      "NO_TRADE"
+    ],
+    "crr_hybrid_policy": {
+      "status": "AVAILABLE",
+      "mode": "DIAGNOSTIC_ONLY_NO_RANKING_CHANGE",
+      "action_counts": {
+        "HYBRID_REPRICE_CANDIDATE": 7,
+        "LOCAL_ONLY": 10,
+        "CRR_SHADOW_REVIEW": 2,
+        "NO_ACTION": 2
+      },
+      "interpretation": "EVIDENCE_ONLY_NO_RANKING_OR_RECOMMENDATION_EFFECT"
+    },
+    "required_mentions": [
+      "Identify the user-supplied target price as a scenario assumption, not an engine forecast.",
+      "Use ranking.decision_state and consideration_eligible as the source of trade-candidate status.",
+      "Use only ai_contract.allowed_candidate_ids when discussing specific candidates.",
+      "State that no candidate passed the consideration gates; near_miss_candidates are explanatory only.",
+      "Explicitly label LOW-confidence candidates when mentioning them.",
+      "If CRR diagnostics are discussed, state that they are evidence-only and ranking-isolated."
+    ],
+    "forbidden_claims": [
+      "Do not call any candidate a recommendation, buy signal, safe trade, or best trade.",
+      "Do not describe score or delta as a probability.",
+      "Do not invent contracts, strikes, expirations, prices, volume, or open interest.",
+      "Do not promote a near-miss candidate into an eligible trade.",
+      "Do not treat HYBRID_REPRICE_CANDIDATE as a trade recommendation or score override."
+    ]
+  },
+  "user_explanation_summary": {
+    "version": "OPTIONS_ANALYSIS_USER_SUMMARY_V1",
+    "decision_state": "NO_TRADE_BASELINE_ONLY",
+    "headline_status": "NO_ELIGIBLE_OPTIONS",
+    "headline": "No candidate passed the consideration gates \u2014 NO_TRADE is the only eligible baseline.",
+    "thesis_assumption": {
+      "direction": "bullish",
+      "horizon_days": 30,
+      "base_target_price": 7.6,
+      "current_underlying_price": 7.2427,
+      "expected_move_pct": 4.93
+    },
+    "eligible_candidate_count": 0,
+    "top_eligible_candidate_id": null,
+    "near_miss_count": 5,
+    "low_confidence_candidate_count": 4,
+    "baseline_summary": {
+      "has_buy_stock": false,
+      "has_no_trade": true,
+      "eligible_baseline_types": [
+        "NO_TRADE"
+      ]
+    },
+    "crr_summary": {
+      "requested": true,
+      "status": "AVAILABLE",
+      "interpretation": "EVIDENCE_ONLY_NO_RANKING_EFFECT"
+    },
+    "assumption_notes": [
+      "The user-supplied base target price is a scenario assumption, not an engine forecast.",
+      "No IV scenario was specified \u2014 IV unchanged analysis assumption was used."
+    ],
+    "safety_notes": [
+      "Score is a comparative heuristic under the supplied scenarios, not a probability or expected return.",
+      "Delta is a Greek, not a probability of profit.",
+      "No candidate passed the consideration gates \u2014 NO_TRADE is preserved; near-miss candidates are explanatory only and were not promoted.",
+      "4 candidate(s) are LOW confidence and must be explicitly labeled as such if mentioned.",
+      "CRR hybrid diagnostics are evidence-only and ranking-isolated \u2014 never a recommendation or score override."
+    ]
+  },
+  "baselines": [
+    {
+      "candidate_id": "NO_TRADE::NASDAQ:ONDS",
+      "strategy_type": "NO_TRADE",
+      "ranking_class": "BASELINE",
+      "score": null,
+      "grade": null,
+      "confidence": "HIGH",
+      "consideration_eligible": true
+    }
+  ],
+  "field_provenance": {
+    "MARKET_NATIVE": [
+      "bid",
+      "ask",
+      "iv",
+      "bid_iv",
+      "ask_iv",
+      "delta",
+      "gamma",
+      "theta",
+      "vega",
+      "rho",
+      "theoretical_price",
+      "underlying_price"
+    ],
+    "MARKET_DERIVED": [
+      "spread_pct",
+      "mid",
+      "spread",
+      "iv_spread",
+      "fill_price"
+    ],
+    "ENGINE_CALCULATED": [
+      "entry_debit",
+      "capital_required",
+      "max_loss",
+      "max_profit",
+      "breakeven",
+      "reward_risk_ratio",
+      "scenario_pnl",
+      "scenario_return_on_risk_pct",
+      "estimated_value",
+      "score",
+      "grade",
+      "confidence",
+      "component_scores",
+      "analysis_snapshot_id",
+      "diagnostics.crr_hybrid_policy",
+      "agent_response_guidance",
+      "user_explanation_summary"
+    ],
+    "USER_INPUT": [
+      "symbol",
+      "direction",
+      "horizon_days",
+      "max_loss (constraint)",
+      "base_target_price"
+    ],
+    "DETERMINISTIC_ASSUMPTION": [
+      "contract_multiplier (assumed 100 for standard US equity options)",
+      "downside_target_price (helper-derived)",
+      "upside_target_price (helper-derived)",
+      "downside/base/upside iv_change_points (defaulted to 0 \u2014 no IV scenario specified)"
+    ]
+  },
+  "ai_contract": {
+    "allowed_candidate_ids": [
+      "BUY_STOCK::NASDAQ:ONDS::7.24::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C8.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::OPRA:ONDS261120C8.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::OPRA:ONDS261120C9.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C10.0::OPRA:ONDS261120C7.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C8.0::OPRA:ONDS261120C9.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C9.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C10.0::OPRA:ONDS261120C8.0::conservative",
+      "LONG_CALL::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C10.0::OPRA:ONDS261016C7.0::conservative",
+      "BUY_STOCK::NASDAQ:ONDS::7.24::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-10-16::OPRA:ONDS261016C7.0::OPRA:ONDS261016C8.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::OPRA:ONDS261120C8.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C7.0::OPRA:ONDS261120C9.0::conservative",
+      "BULL_CALL_SPREAD::NASDAQ:ONDS::2026-11-20::OPRA:ONDS261120C10.0::OPRA:ONDS261120C7.0::conservative",
+      "NO_TRADE::NASDAQ:ONDS"
+    ],
+    "numeric_source_of_truth": "THIS_ANALYSIS_PACKET",
+    "rules": [
+      "Do not invent option contracts.",
+      "Do not invent prices.",
+      "Do not recalculate Greeks.",
+      "Do not recalculate max loss/profit.",
+      "Do not alter scenario P&L.",
+      "Do not state score as probability.",
+      "Do not state delta as probability of profit.",
+      "Do not claim consideration_eligible means recommendation.",
+      "If no candidate is eligible, preserve that result \u2014 do not promote a near-miss into a recommendation.",
+      "Explicitly mention LOW confidence when discussing a candidate.",
+      "Mention important scenario warnings (e.g. LARGE_TIME_STEP, NEAR_EXPIRATION) when present.",
+      "Do not treat crr_hybrid_policy diagnostics as a recommendation, score override, or production pricing switch.",
+      "Do not infer volume or open interest. Open interest is currently unavailable. Volume is not used by this analysis (not a filtering/scoring/ranking input) even where it may be technically obtainable elsewhere as optional live enrichment."
+    ]
+  },
+  "limitations": [
+    "Score is a heuristic comparative metric (RANKING_MODEL_V1), not a probability or expected return.",
+    "Scenario repricing (LOCAL_GREEK_APPROXIMATION) is a local approximation, not a full option pricing model \u2014 see Phase 0B limitations.",
+    "Ranking depends entirely on the user-supplied scenario prices; different assumptions produce different rankings.",
+    "Open interest is currently unavailable. Volume (technically obtainable via TradingView WebSocket subscription, but UI/subscription-dependent and event-driven, not a guaranteed initial snapshot) is not a dependency of this tool \u2014 neither volume nor open interest is used in filtering, scoring, or ranking.",
+    "No historical calibration of scoring weights or thresholds.",
+    "No earnings/event-driven volatility model \u2014 IV shocks default to 0 unless explicitly supplied.",
+    "No portfolio-level risk (correlation, margin, concentration) is modeled.",
+    "No early-exercise/assignment or dividend/ex-dividend modeling.",
+    "The scan2 request may be capped by TradingView at 4000 rows for very large chains; chain_completeness/warnings surface this, but the DTE window does not currently reduce the underlying request size.",
+    "No AI/LLM reasoning is performed by this tool \u2014 it returns structured, deterministic data only."
+  ]
+}
