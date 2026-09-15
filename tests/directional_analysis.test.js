@@ -491,3 +491,119 @@ describe('Phase 2E.1 — CRR hybrid diagnostic contract stabilization', () => {
     assert.deepEqual(withDiagnostics.top_candidates.map(c => c.consideration_eligible), base.top_candidates.map(c => c.consideration_eligible));
   });
 });
+
+describe('Phase 3B — user_explanation_summary', () => {
+  it('is present on every analysis with the expected version', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    assert.ok(result.user_explanation_summary);
+    assert.equal(result.user_explanation_summary.version, 'OPTIONS_ANALYSIS_USER_SUMMARY_V1');
+  });
+
+  it('NO_TRADE_BASELINE_ONLY: headline_status is NO_ELIGIBLE_OPTIONS and top_eligible_candidate_id is null', async () => {
+    const result = await analyzeDirectional({
+      ...BULLISH_BASE, minimum_score_for_consideration: 99.99,
+    }, mockDeps());
+    const summary = result.user_explanation_summary;
+    assert.equal(result.ranking.decision_state, 'NO_TRADE_BASELINE_ONLY');
+    assert.equal(summary.decision_state, 'NO_TRADE_BASELINE_ONLY');
+    assert.equal(summary.headline_status, 'NO_ELIGIBLE_OPTIONS');
+    assert.equal(summary.top_eligible_candidate_id, null);
+    assert.equal(summary.eligible_candidate_count, 0);
+    assert.ok(summary.near_miss_count > 0);
+    assert.ok(summary.baseline_summary.has_no_trade);
+    assert.ok(summary.safety_notes.some(n => n.includes('NO_TRADE')));
+  });
+
+  it('TRADE_CANDIDATES_AVAILABLE: headline_status is ELIGIBLE_CANDIDATES_AVAILABLE with a consistent count/top id', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    const summary = result.user_explanation_summary;
+    assert.equal(result.ranking.decision_state, 'TRADE_CANDIDATES_AVAILABLE');
+    assert.equal(summary.decision_state, 'TRADE_CANDIDATES_AVAILABLE');
+    assert.equal(summary.headline_status, 'ELIGIBLE_CANDIDATES_AVAILABLE');
+    assert.equal(summary.top_eligible_candidate_id, result.ranking.top_trade_candidate_id);
+    assert.equal(
+      summary.eligible_candidate_count,
+      result.top_candidates.filter(c => c.consideration_eligible).length,
+    );
+    assert.equal(summary.near_miss_count, 0);
+  });
+
+  it('low_confidence_candidate_count matches agent_response_guidance.low_confidence_candidate_ids exactly', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    assert.equal(
+      result.user_explanation_summary.low_confidence_candidate_count,
+      result.agent_response_guidance.low_confidence_candidate_ids.length,
+    );
+  });
+
+  it('IV_SCENARIO_NOT_SPECIFIED: assumption_notes explicitly states the IV-unchanged analysis assumption', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps()); // no *_iv_change_points supplied
+    assert.ok(result.data_source.warnings.includes('IV_SCENARIO_NOT_SPECIFIED'));
+    assert.ok(result.user_explanation_summary.assumption_notes.some(n => n.includes('IV unchanged analysis assumption')));
+  });
+
+  it('does not add the IV-unchanged note when an explicit IV scenario is supplied', async () => {
+    const result = await analyzeDirectional({
+      ...BULLISH_BASE, downside_iv_change_points: 8, base_iv_change_points: 2, upside_iv_change_points: -5,
+    }, mockDeps());
+    assert.ok(!result.data_source.warnings.includes('IV_SCENARIO_NOT_SPECIFIED'));
+    assert.ok(!result.user_explanation_summary.assumption_notes.some(n => n.includes('IV unchanged analysis assumption')));
+  });
+
+  it('CRR requested and AVAILABLE: crr_summary is evidence-only/no-ranking-effect', async () => {
+    const result = await analyzeDirectional(
+      { ...BULLISH_BASE, include_crr_hybrid_diagnostics: true },
+      mockDeps({ dividendYieldPct: 0.5 }),
+    );
+    assert.equal(result.diagnostics.crr_hybrid_policy.status, 'AVAILABLE');
+    const crr = result.user_explanation_summary.crr_summary;
+    assert.equal(crr.requested, true);
+    assert.equal(crr.status, 'AVAILABLE');
+    assert.equal(crr.interpretation, 'EVIDENCE_ONLY_NO_RANKING_EFFECT');
+    assert.ok(result.user_explanation_summary.safety_notes.some(n => n.toLowerCase().includes('evidence-only')));
+  });
+
+  it('CRR not requested: crr_summary reports NOT_REQUESTED', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    const crr = result.user_explanation_summary.crr_summary;
+    assert.equal(crr.requested, false);
+    assert.equal(crr.interpretation, 'NOT_REQUESTED');
+  });
+
+  it('field_provenance.ENGINE_CALCULATED includes user_explanation_summary', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    assert.ok(result.field_provenance.ENGINE_CALCULATED.includes('user_explanation_summary'));
+  });
+
+  it('does not itself change ranking/top_candidates behavior when CRR diagnostics are enabled', async () => {
+    const base = await analyzeDirectional(BULLISH_BASE, mockDeps({ dividendYieldPct: 0.5 }));
+    const withDiagnostics = await analyzeDirectional(
+      { ...BULLISH_BASE, include_crr_hybrid_diagnostics: true },
+      mockDeps({ dividendYieldPct: 0.5 }),
+    );
+    assert.deepEqual(withDiagnostics.top_candidates.map(c => c.candidate_id), base.top_candidates.map(c => c.candidate_id));
+    assert.equal(withDiagnostics.ranking.top_trade_candidate_id, base.ranking.top_trade_candidate_id);
+    assert.equal(withDiagnostics.ranking.decision_state, base.ranking.decision_state);
+    // The summary reflects the CRR-enabled run, but the underlying trade decision is unchanged.
+    assert.equal(withDiagnostics.user_explanation_summary.decision_state, base.user_explanation_summary.decision_state);
+    assert.equal(withDiagnostics.user_explanation_summary.top_eligible_candidate_id, base.user_explanation_summary.top_eligible_candidate_id);
+  });
+
+  it('never contains investment-advice language in its own static text', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    const text = JSON.stringify(result.user_explanation_summary).toLowerCase();
+    for (const banned of ['buy signal', 'safe trade', 'best trade', 'guaranteed']) {
+      assert.ok(!text.includes(banned), `must not contain "${banned}"`);
+    }
+  });
+
+  it('thesis_assumption mirrors the top-level thesis/underlying price exactly', async () => {
+    const result = await analyzeDirectional(BULLISH_BASE, mockDeps());
+    const t = result.user_explanation_summary.thesis_assumption;
+    assert.equal(t.direction, result.direction);
+    assert.equal(t.horizon_days, result.horizon_days);
+    assert.equal(t.base_target_price, result.thesis.base_target_price);
+    assert.equal(t.current_underlying_price, result.underlying_price);
+    assert.equal(t.expected_move_pct, result.thesis.expected_move_pct);
+  });
+});
